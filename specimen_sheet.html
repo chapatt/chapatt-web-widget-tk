@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="example.css" />
+</head>
+<body>
+<h1>Widgets</h1>
+  textBox:
+  <div id="text-box-1" class="example-widget example-text-box hinted" style="width: 15em;">
+    <div class="field" contenteditable="true"></div>
+    <div class="hint">text goes here</div>
+  </div>
+  <br />
+
+
+  button:
+  <div id="button-1" class="example-widget example-button">
+    <div>button1</div>
+  </div>
+  <div id="button2" class="example-widget example-button">
+    <img src="star_16px.svg" />
+    <div>button2</div>
+  </div>
+  <div id="button3" class="example-widget example-button">
+    <img src="star_16px.svg" />
+  </div>
+  <div id="button4" class="example-widget example-button">
+  </div>
+  <br />
+
+
+  toggleButton:
+  <div id="toggle-button-1" class="example-widget example-button example-toggle-button">
+    <span>unselected</span>
+  </div>
+  <div id="toggle-button-2" class="example-widget example-button example-toggle-button selected">
+    <span>selected</span>
+  </div>
+  <br />
+
+
+  spinBox:
+  <div id="spin-box-1" class="example-widget example-spin-box">
+    <div class="decrease">
+      <div>&#x25c2;</div>
+    </div>
+    <div class="field">
+      <div contenteditable="true">142.5</div>
+    </div>
+    <div class="increase">
+      <div>&#x25b8;</div>
+    </div>
+  </div>
+
+  <div id="spin-box-2" class="example-widget example-spin-box-tall">
+    <div class="field" contenteditable="true">142.5</div>
+    <div class="controls">
+      <div class="increase">
+        <div>&#x25b4;</div>
+      </div>
+      <div class="decrease">
+        <div>&#x25be;</div>
+      </div>
+    </div>
+  </div>
+  <br />
+
+
+  slider:
+  <div id="slider-1" class="example-widget example-slider">
+    <div class="bar" style="width: 50%;"></div>
+    <div class="overlay">
+      <div class="decrease">
+        <div>&#x25c2;</div>
+      </div>
+      <div class="label">
+        <div>X:</div>
+      </div>
+      <div class="increase">
+        <div>&#x25b8;</div>
+      </div>
+      <div class="field">
+        <div contenteditable="true">50%</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="slider-2" class="example-widget example-slider-tall">
+    <div class="bar-container">
+      <div class="bar" style="width: 50%;"></div>
+      <div class="overlay">
+        <div class="label">
+          <div>X:</div>
+        </div>
+        <div class="field">
+          <div contenteditable="true">50%</div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="increase example-button">
+        <div>&#x25b4;</div>
+      </div>
+      <div class="decrease example-button">
+        <div>&#x25be;</div>
+      </div>
+    </div>
+  </div>
+  <br />
+
+
+  buttonGroup:
+  <ul id="button-group-1" class="example-widget example-button-group">
+    <li class="example-button button">
+      <div>choice1</div>
+    </li>
+    <li class="example-button button">
+      <div>choice2</div>
+    </li>
+    <li class="example-button button">
+      <img src="star_16px.svg" />
+      <div>choice3</div>
+    </li>
+  </ul>
+  <br />
+
+
+  splitButton:
+  <div id="split-button-1" class="example-widget example-split-button">
+    <div class="control example-button">
+      <div>&#x25be;</div>
+    </div>
+    <ul>
+      <li class="button example-button example-toggle-button">
+        <div>choice1</div>
+      </li>
+      <li class="button example-button example-toggle-button">
+        <div>choice2</div>
+      </li>
+      <li class="button example-button example-toggle-button">
+        <div>choice3asdfjkl;</div>
+      </li>
+    </ul>
+  </div>
+
+  <div id="split-button-2" class="example-widget example-split-button dropped">
+    <div class="control example-button">
+      <div>&#x25be;</div>
+    </div>
+    <ul>
+      <li class="button example-button example-toggle-button">
+        <div>choice1</div>
+      </li>
+      <li class="button example-button example-toggle-button">
+        <div>choice2</div>
+      </li>
+      <li class="button example-button example-toggle-button">
+        <div>choice3asdfghjkl;</div>
+      </li>
+    </ul>
+  </div>
+  <br />
+
+
+  toggleButtonGroup:
+  <ul id="toggle-button-group-1" class="example-widget example-button-group">
+    <li class="example-button example-toggle-button button">
+      <div>choice1</div>
+    </li>
+    <li class="example-button example-toggle-button button selected">
+      <div>choice2</div>
+    </li>
+    <li class="example-button example-toggle-button button">
+      <div>choice3</div>
+    </li>
+  </ul>
+  <br />
+
+
+  dropDownList:
+  <div id="drop-down-list-1" class="example-widget example-drop-down-list">
+    <div class="control example-button">
+      <div>&#x25be;</div>
+    </div>
+    <ul>
+      <li class="button example-button example-toggle-button">
+        <div>choice1</div>
+      </li>
+      <li class="button example-button example-toggle-button">
+        <div>choice2</div>
+      </li>
+      <li class="button example-button example-toggle-button selected">
+        <div>choice3asdfjkl;</div>
+      </li>
+    </ul>
+  </div>
+
+  <div id="drop-down-list-2" class="example-widget example-drop-down-list dropped">
+    <div class="control example-button">
+      <div>&#x25be;</div>
+    </div>
+    <ul>
+      <li class="button example-button example-toggle-button">
+        <div>choice1</div>
+      </li>
+      <li class="button example-button example-toggle-button">
+        <div>choice2</div>
+      </li>
+      <li class="button example-button example-toggle-button selected">
+        <div>choice3asdfghjkl;</div>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

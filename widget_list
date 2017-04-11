@@ -1,0 +1,65 @@
+widget
+textBox
+	inherits widget
+button
+	inherits widget
+toggleButton
+	inherits button
+
+	mixes-in state
+spinBox
+	inherits widget
+
+	mixes-in numericalValue
+	mixes-in state
+
+        has a textBox
+	has buttons
+slider
+	inherits spinbox
+
+	has a bar
+buttonGroup
+	inherits widget
+
+	has buttons
+splitButton
+	inherits buttonGroup
+
+	mixes-in dropDown
+
+	has buttons
+toggleButtonGroup
+	inherits widget
+
+	mixes-in state
+
+	has toggleButtons
+
+	can behave like a radioButton, checkBox, or listBox
+		depending on selection rules
+dropDownList
+	inherits toggleButtonGroup
+
+	mixes-in dropDown
+menu
+	inherits widget
+
+	mixes-in dropDown
+
+	has menus
+	has buttons
+	has toggleButtons
+	has toggleButtonGroups
+contextMenu/pieMenu
+	inherits menu
+value
+	mixes-in emitter
+numericalValue
+	inherits value
+emitter
+	has signals
+signal
+dropDown
+bar
+state
