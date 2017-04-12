@@ -507,25 +507,30 @@
 
 
 /*
- * dropDownList
+ * dropDownList, splitButton alternative with added functionality
+ *   to allow switching the default button dynamically
  */
 
+.example-split-button-dynamic.dropped,
 .example-drop-down-list.dropped {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   overflow: visible;
 }
 
+.example-split-button-dynamic > *,
 .example-drop-down-list > * {
   height: 100%;
 }
 
+.example-split-button-dynamic > ul,
 .example-drop-down-list > ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
+.example-split-button-dynamic > .control,
 .example-drop-down-list > .control {
   border-left-style: solid;
   border-left-width: var(--border-width);
@@ -538,12 +543,14 @@
   right: 0;
 }
 
+.example-split-button-dynamic > .control > *,
 .example-drop-down-list > .control > * {
   display: block;
   width: 100%;
   text-align: center;
 }
 
+.example-split-button-dynamic > ul > .button,
 .example-drop-down-list > ul > .button {
   float: left;
   clear: left;
@@ -558,12 +565,14 @@
   padding-right: calc(var(--height) + var(--padding));
 }
 
+.example-split-button-dynamic.dropped > ul > .button,
 .example-drop-down-list.dropped > ul > .button {
   border-bottom-left-radius: 0;
   visibility: visible;
   height: 100%;
 }
 
+.example-split-button-dynamic.dropped > ul > .button ~ .button,
 .example-drop-down-list.dropped > ul > .button ~ .button {
   width: calc(100% + calc(2 * var(--border-width)));
   height: calc(100% + var(--border-width));
@@ -576,12 +585,14 @@
   position: relative;
 }
 
+.example-split-button-dynamic:not(.dropped) > ul > .button.default,
 .example-drop-down-list:not(.dropped) > ul > .button.selected {
   border-style: none;
   visibility: visible;
   height: 100%;
 }
 
+.example-split-button-dynamic.dropped > ul > .button:last-of-type,
 .example-drop-down-list.dropped > ul > .button:last-of-type {
   border-bottom-left-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
