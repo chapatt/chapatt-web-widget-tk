@@ -190,12 +190,12 @@
 
 .example-spin-box-tall > .controls > * {
   height: calc(50% - calc(var(--border-width) / 2));
-  padding: 0 var(--padding);
   border-bottom-width: var(--border-width);
   border-bottom-style: solid;
   border-bottom-color: #cccccc;
   display: block;
   text-align: center;
+  padding: 0;
 }
 
 .example-spin-box-tall > .controls > *:hover {
@@ -385,6 +385,7 @@
   border-bottom-color: #cccccc;
   display: block;
   text-align: center;
+  padding: 0;
 }
 
 .example-slider-tall > .controls > * > * {
@@ -455,11 +456,7 @@
   position: absolute;
   top: 0;
   right: 0;
-}
-
-.example-split-button > .control > * {
-  display: block;
-  width: 100%;
+  padding: 0;
   text-align: center;
 }
 
@@ -542,12 +539,7 @@
   top: 0;
   right: 0;
   z-index: 1;
-}
-
-.example-split-button-dynamic > .control > *,
-.example-drop-down-list > .control > * {
-  display: block;
-  width: 100%;
+  padding: 0;
   text-align: center;
 }
 
