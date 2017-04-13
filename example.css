@@ -189,7 +189,7 @@
 }
 
 .example-spin-box-tall > .controls > * {
-  height: calc(50% - calc(var(--border-width) / 2));
+  height: calc(50% - (var(--border-width) / 2));
   border-bottom-width: var(--border-width);
   border-bottom-style: solid;
   border-bottom-color: #cccccc;
@@ -379,7 +379,7 @@
 }
 
 .example-slider-tall > .controls > * {
-  height: calc(50% - calc(var(--border-width) / 2));
+  height: calc(50% - (var(--border-width) / 2));
   border-bottom-width: var(--border-width);
   border-bottom-style: solid;
   border-bottom-color: #cccccc;
@@ -481,7 +481,7 @@
 }
 
 .example-split-button.dropped > ul > .button ~ .button {
-  width: calc(100% + calc(2 * var(--border-width)));
+  width: calc(100% + (2 * var(--border-width)));
   height: calc(100% + var(--border-width));
   margin-left: calc(0px - var(--border-width));
   border-radius: 0;
@@ -496,7 +496,7 @@
   border-bottom-left-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
   border-bottom-style: solid;
-  height: calc(100% + calc(2 * var(--border-width)));
+  height: calc(100% + (2 * var(--border-width)));
 }
 
 
@@ -568,7 +568,7 @@
 
 .example-split-button-dynamic.dropped > ul > .button ~ .button,
 .example-drop-down-list.dropped > ul > .button ~ .button {
-  width: calc(100% + calc(2 * var(--border-width)));
+  width: calc(100% + (2 * var(--border-width)));
   height: calc(100% + var(--border-width));
   margin-left: calc(0px - var(--border-width));
   border-radius: 0;
@@ -595,7 +595,7 @@
   border-bottom-left-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
   border-bottom-style: solid;
-  height: calc(100% + calc(2 * var(--border-width)));
+  height: calc(100% + (2 * var(--border-width)));
 }
 
 .example-drop-down-list > ul > .hint {
