@@ -7,6 +7,17 @@
   --border-width: 1px;
   --border-radius: 0.25em;
   --padding: 0.5em;
+  --control-width: var(--height);
+
+  --color-normal: #eeeeee;
+  --color-normal-hover: #ffffff;
+  --color-normal-active: #dddddd;
+
+  --color-accent: #9999dd;
+  --color-accent-hover: #bbbbff;
+  --color-accent-active: #7777bb;
+
+  --color-border: #cccccc;
 
   display: inline-block;
   position: relative;
@@ -19,8 +30,8 @@
   border-width: var(--border-width);
   border-style: solid;
   border-radius: var(--border-radius);
-  border-color: #cccccc;
-  background-color: #eeeeee;
+  border-color: var(--color-border);
+  background-color: var(--color-normal);
 }
 
 
@@ -56,7 +67,7 @@
 }
 
 .example-text-box > .hint {
-  color: #cccccc;
+  color: var(--color-border);
   z-index: 0;
 }
 
@@ -69,16 +80,16 @@
  */
 
 .example-button {
-  background-color: #eeeeee;
+  background-color: var(--color-normal);
   padding: 0 var(--padding);
 }
 
 .example-button:hover {
-  background-color: #ffffff;
+  background-color: var(--color-normal-hover);
 }
 
 .example-button:active {
-  background-color: #dddddd;
+  background-color: var(--color-normal-active);
 }
 
 .example-button > * {
@@ -98,15 +109,15 @@
  */
 
 .example-toggle-button.selected {
-  background-color: #9999dd;
+  background-color: var(--color-accent);
 }
 
 .example-toggle-button.selected:hover {
-  background-color: #bbbbff;
+  background-color: var(--color-accent-hover);
 }
 
 .example-toggle-button.selected:active {
-  background-color: #7777bb;
+  background-color: var(--color-accent-active);
 }
 
 
@@ -118,11 +129,11 @@
  */
 
 .example-spin-box:hover {
-  background-color: #ffffff;
+  background-color: var(--color-normal-hover);
 }
 
 .example-spin-box:active {
-  background-color: #dddddd;
+  background-color: var(--color-normal-active);
 }
 
 .example-spin-box > * {
@@ -182,28 +193,28 @@
   box-sizing: border-box;
   border-left-width: var(--border-width);
   border-left-style: solid;
-  border-left-color: #cccccc;
+  border-left-color: var(--color-border);
 
   box-sizing: border-box;
-  width: var(--height);
+  width: var(--control-width);
 }
 
 .example-spin-box-tall > .controls > * {
   height: calc(50% - (var(--border-width) / 2));
   border-bottom-width: var(--border-width);
   border-bottom-style: solid;
-  border-bottom-color: #cccccc;
+  border-bottom-color: var(--color-border);
   display: block;
   text-align: center;
   padding: 0;
 }
 
 .example-spin-box-tall > .controls > *:hover {
-  background-color: #ffffff;
+  background-color: var(--color-normal-hover);
 }
 
 .example-spin-box-tall > .controls > *:active {
-  background-color: #dddddd;
+  background-color: var(--color-normal-active);
 }
 
 .example-spin-box-tall > .controls > .increase {
@@ -231,11 +242,11 @@
 }
 
 .example-slider:hover {
-  background-color: #ffffff;
+  background-color: var(--color-normal-hover);
 }
 
 .example-slider:active {
-  background-color: #dddddd;
+  background-color: var(--color-normal-active);
 }
 
 .example-slider > * {
@@ -246,15 +257,15 @@
 }
 
 .example-slider > .bar {
-  background-color: #9999dd;
+  background-color: var(--color-accent);
 }
 
 .example-slider:hover > .bar {
-  background-color: #bbbbff;
+  background-color: var(--color-accent-hover);
 }
 
 .example-slider:active > .bar {
-  background-color: #7777bb;
+  background-color: var(--color-accent-active);
 }
 
 .example-slider > .overlay {
@@ -304,11 +315,11 @@
 }
 
 .example-slider-tall > .bar-container:hover {
-  background-color: #ffffff;
+  background-color: var(--color-normal-hover);
 }
 
 .example-slider-tall > .bar-container:active {
-  background-color: #dddddd;
+  background-color: var(--color-normal-active);
 }
 
 .example-slider-tall > .bar-container {
@@ -327,15 +338,15 @@
 }
 
 .example-slider-tall > .bar-container > .bar {
-  background-color: #9999dd;
+  background-color: var(--color-accent);
 }
 
 .example-slider-tall > .bar-container:hover > .bar {
-  background-color: #bbbbff;
+  background-color: var(--color-accent-hover);
 }
 
 .example-slider-tall > .bar-container:active > .bar {
-  background-color: #7777bb;
+  background-color: var(--color-accent-active);
 }
 
 .example-slider-tall > .bar-container > .overlay {
@@ -372,17 +383,17 @@
   float: left;
   border-left-width: var(--border-width);
   border-left-style: solid;
-  border-left-color: #cccccc;
+  border-left-color: var(--color-border);
 
   box-sizing: border-box;
-  width: var(--height);
+  width: var(--control-width);
 }
 
 .example-slider-tall > .controls > * {
   height: calc(50% - (var(--border-width) / 2));
   border-bottom-width: var(--border-width);
   border-bottom-style: solid;
-  border-bottom-color: #cccccc;
+  border-bottom-color: var(--color-border);
   display: block;
   text-align: center;
   padding: 0;
@@ -414,7 +425,7 @@
   padding: 0 var(--padding);
   border-right-style: solid;
   border-right-width: var(--border-width);
-  border-right-color: #cccccc;
+  border-right-color: var(--color-border);
 }
 
 .example-button-group > .button:last-child {
@@ -428,7 +439,6 @@
 /*
  * splitButton
  */
-/* only first button needs right padding */
 
 .example-split-button.dropped {
   border-bottom-left-radius: 0;
@@ -449,10 +459,10 @@
 .example-split-button > .control {
   border-left-style: solid;
   border-left-width: var(--border-width);
-  border-left-color: #cccccc;
+  border-left-color: var(--color-border);
   border-top-right-radius: calc(var(--border-radius) - var(--border-width));
   box-sizing: border-box;
-  width: var(--height);
+  width: var(--control-width);
   position: absolute;
   top: 0;
   right: 0;
@@ -469,7 +479,7 @@
   height: 100%;
   box-sizing: border-box;
   width: 100%;
-  padding-right: calc(var(--height) + var(--padding));
+  padding-right: calc(var(--control-width) + var(--padding));
 }
 
 .example-split-button > ul > .button ~ .button {
@@ -487,7 +497,7 @@
   border-radius: 0;
   border-style: solid solid none solid;
   border-width: var(--border-width);
-  border-color: #cccccc;
+  border-color: var(--color-border);
   z-index: 1000;
   position: relative;
 }
@@ -531,10 +541,10 @@
 .example-drop-down-list > .control {
   border-left-style: solid;
   border-left-width: var(--border-width);
-  border-left-color: #cccccc;
+  border-left-color: var(--color-border);
   border-top-right-radius: calc(var(--border-radius) - var(--border-width));
   box-sizing: border-box;
-  width: var(--height);
+  width: var(--control-width);
   position: absolute;
   top: 0;
   right: 0;
@@ -555,7 +565,7 @@
   width: 100%;
   height: 0;
   visibility: hidden;
-  padding-right: calc(var(--height) + var(--padding));
+  padding-right: calc(var(--control-width) + var(--padding));
   z-index: 0;
 }
 
@@ -574,7 +584,7 @@
   border-radius: 0;
   border-style: solid solid none solid;
   border-width: var(--border-width);
-  border-color: #cccccc;
+  border-color: var(--color-border);
   z-index: 1000;
   position: relative;
 }
@@ -599,10 +609,7 @@
 }
 
 .example-drop-down-list > ul > .hint {
-  background-color: #eeeeee;
+  background-color: var(--color-normal);
   visibility: visible;
   height: 100%;
-}
-
-.example-drop-down-list.dropped > ul > .hint {
 }
