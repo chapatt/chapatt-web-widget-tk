@@ -613,3 +613,37 @@
   visibility: visible;
   height: 100%;
 }
+
+
+
+
+
+/*
+ * menu
+ */
+
+ul.example-menu {
+  list-style-type: none;
+  padding: 0;
+  height: auto;
+  display: inline-block;
+  min-width: 15em;
+}
+
+ul.example-menu > li {
+  display: block;
+  position: relative;
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-border);
+  border-bottom-width: var(--border-width);
+  height: var(--height);
+}
+
+ul.example-menu > li:last-child {
+  border-bottom-style: none;
+}
+
+ul.example-menu > li *.right {
+  float: right;
+  margin-left: 3em;
+}
