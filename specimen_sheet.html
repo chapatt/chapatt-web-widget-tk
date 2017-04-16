@@ -4,6 +4,37 @@
   <title>chapatt-web-widget-tk - Specimen Sheet</title>
 
   <link rel="stylesheet" type="text/css" href="example.css" />
+
+  <script type="text/javascript" src="chapatt-web-widget-tk.js"></script>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var button1 = chapatt.Button.new(document.getElementById('button-1'));
+        button1.signalConnect('clicked',
+            function(targetWidget, signalName, userData) {
+                console.log(targetWidget,
+                    'emitted \'' + signalName + '\' signal with data:',
+                    userData
+                );
+            },
+            'hiya!'
+        );
+
+        var button2 = chapatt.Button.new(document.getElementById('button-2'));
+        button2.signalConnect('clicked', function() {
+            console.log('button-2: clicked');
+        });
+
+        var button3 = chapatt.Button.new(document.getElementById('button-3'));
+        button3.signalConnect('clicked', function() {
+            console.log('button-3: clicked');
+        });
+
+        var button4 = chapatt.Button.new(document.getElementById('button-4'));
+        button4.signalConnect('clicked', function() {
+            console.log('button-4: clicked');
+        });
+    });
+  </script>
 </head>
 <body>
   <h1>chapatt-web-widget-tk</h1>
