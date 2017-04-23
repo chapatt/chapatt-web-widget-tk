@@ -10,9 +10,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         var button1 = chapatt.Button.new(document.getElementById('button-1'));
         button1.signalConnect('clicked',
-            function(targetWidget, signalName, userData) {
+            function(targetWidget, signalName, signalData, userData) {
                 console.log(targetWidget,
-                    'emitted \'' + signalName + '\' signal with data:',
+                    'emitted \'' + signalName + '\' signal with userData:',
                     userData
                 );
             },
@@ -33,6 +33,19 @@
         button4.signalConnect('clicked', function() {
             console.log('button-4: clicked');
         });
+
+        var toggleButton1 = chapatt.ToggleButton.new(document.getElementById('toggle-button-1'));
+        toggleButton1.signalConnect('clicked', function() {
+            console.log('toggle-button-1: clicked');
+        });
+        toggleButton1.value.signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
+            console.log('toggle-button-1: value changed from ' + toggleButton1.value.value + ' to ' + signalData);
+        });
+
+        var toggleButton2 = chapatt.ToggleButton.new(document.getElementById('toggle-button-2'));
+        toggleButton2.signalConnect('clicked', function() {
+            console.log('toggle-button-2: clicked');
+        });
     });
   </script>
 </head>
@@ -40,7 +53,7 @@
   <h1>chapatt-web-widget-tk</h1>
 
   <dl>
-    <dt>textBox</dt>
+    <dt>TextBox</dt>
     <dd>
       <div id="text-box-1" class="example-widget example-text-box" style="width: 15em;">
         <div class="field" contenteditable="true"></div>
@@ -49,7 +62,7 @@
     </dd>
 
 
-    <dt>button</dt>
+    <dt>Button</dt>
     <dd>
       <div id="button-1" class="example-widget example-button">
         <div>button1</div>
@@ -69,19 +82,19 @@
     </dd>
 
 
-    <dt>toggleButton</dt>
+    <dt>ToggleButton</dt>
     <dd>
       <div id="toggle-button-1" class="example-widget example-button example-toggle-button">
-        <span>unselected</span>
+        <span>toggleButton1</span>
       </div>
 
       <div id="toggle-button-2" class="example-widget example-button example-toggle-button selected">
-        <span>selected</span>
+        <span>toggleButton2</span>
       </div>
     </dd>
 
 
-    <dt>spinBox</dt>
+    <dt>SpinBox</dt>
     <dd>
       <div id="spin-box-1" class="example-widget example-spin-box">
         <div class="decrease">
@@ -109,7 +122,7 @@
     </dd>
 
 
-    <dt>slider</dt>
+    <dt>Slider</dt>
     <dd>
       <div id="slider-1" class="example-widget example-slider">
         <div class="bar" style="width: 50%;"></div>
@@ -153,7 +166,7 @@
     </dd>
 
 
-    <dt>buttonGroup</dt>
+    <dt>ButtonGroup</dt>
     <dd>
       <ul id="button-group-1" class="example-widget example-button-group">
         <li class="example-button button">
@@ -170,7 +183,7 @@
     </dd>
 
 
-    <dt>splitButton</dt>
+    <dt>SplitButton</dt>
     <dd>
       <div id="split-button-1" class="example-widget example-split-button">
         <div class="control example-button">
@@ -242,7 +255,7 @@
     </dd>
 
 
-    <dt>toggleButtonGroup</dt>
+    <dt>ToggleButtonGroup</dt>
     <dd>
       <ul id="toggle-button-group-1" class="example-widget example-button-group">
         <li class="example-button example-toggle-button button">
@@ -258,7 +271,7 @@
     </dd>
 
 
-    <dt>dropDownList</dt>
+    <dt>DropDownList</dt>
     <dd>
       <div id="drop-down-list-1" class="example-widget example-drop-down-list">
         <div class="control example-button">
@@ -334,7 +347,7 @@
         </ul>
       </div>
     </dd>
-    <dt>menu</dt>
+    <dt>Menu</dt>
     <dd>
       <ul id="menu-1" class="example-widget example-menu">
         <li class="button example-button">

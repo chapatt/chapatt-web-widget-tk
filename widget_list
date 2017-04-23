@@ -3,15 +3,16 @@ textBox
 	inherits widget
 button
 	inherits widget
+
+	mixes-in emitter
 toggleButton
 	inherits button
 
-	mixes-in state
+	mixes-in value
 spinBox
 	inherits widget
 
 	mixes-in numericalValue
-	mixes-in state
 
         has a textBox
 	has buttons
@@ -22,17 +23,20 @@ slider
 buttonGroup
 	inherits widget
 
+	mixes-in emitter
+
 	has buttons
 splitButton
 	inherits buttonGroup
 
+	mixes-in emitter
 	mixes-in dropDown
 
 	has buttons
 toggleButtonGroup
 	inherits widget
 
-	mixes-in state
+	mixes-in value
 
 	has toggleButtons
 
@@ -55,6 +59,8 @@ contextMenu/pieMenu
 	inherits menu
 value
 	mixes-in emitter
+
+        has a valueModel
 numericalValue
 	inherits value
 emitter
@@ -62,4 +68,4 @@ emitter
 signal
 dropDown
 bar
-state
+valueModel
