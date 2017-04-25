@@ -38,8 +38,8 @@
         toggleButton1.signalConnect('clicked', function() {
             console.log('toggle-button-1: clicked');
         });
-        toggleButton1.value.signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
-            console.log('toggle-button-1: value changed from ' + toggleButton1.value.value + ' to ' + signalData);
+        toggleButton1.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
+            console.log('toggle-button-1: value changed from ' + toggleButton1.getValueModel().value + ' to ' + signalData);
         });
 
         var toggleButton2 = chapatt.ToggleButton.new(document.getElementById('toggle-button-2'));

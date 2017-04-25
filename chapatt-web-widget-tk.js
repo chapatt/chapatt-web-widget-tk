@@ -61,11 +61,11 @@ chapatt.Emitter = {
     }
 }
 
-chapatt.Value = {};
-Object.assign(chapatt.Value, chapatt.Emitter);
-Object.assign(chapatt.Value,
+chapatt.ValueModel = {};
+Object.assign(chapatt.ValueModel, chapatt.Emitter);
+Object.assign(chapatt.ValueModel,
 {
-    initValue: function() {
+    initValueModel: function() {
         this.initEmitter();
         this.addSignal('valueChanged');
     },
@@ -80,11 +80,25 @@ Object.assign(chapatt.Value,
     },
 
     new: function() {
-        var value = Object.create(this);
-        value.initValue();
-        return value;
+        var valueModel = Object.create(this);
+        valueModel.initValueModel();
+        return valueModel;
     }
 });
+
+chapatt.Valuable = {
+    initValuable: function() {
+        this.valueModel = chapatt.ValueModel.new();
+    },
+
+    getValueModel: function() {
+        return this.valueModel;
+    },
+
+    setValueModel: function(valueModel) {
+        this.valueModel = valueModel;
+    }
+}
 
 chapatt.Widget = {
     widgets: [],
@@ -115,9 +129,9 @@ Object.assign(chapatt.Button,
         this.buttons.push(this);
 
         this.addSignal('clicked');
-        element.addEventListener('click', this.handleClick.bind(this, event));
+        this.element.addEventListener('click', this.handleClick.bind(this, event));
 
-        element.addEventListener('mousedown', function(event)
+        this.element.addEventListener('mousedown', function(event)
         {
             event.preventDefault();
         });
@@ -135,28 +149,32 @@ Object.assign(chapatt.Button,
 });
 
 chapatt.ToggleButton = Object.create(chapatt.Button);
+Object.assign(chapatt.ToggleButton, chapatt.Valuable);
 Object.assign(chapatt.ToggleButton,
 {
+    toggleButtons: [],
+
     initToggleButton: function(element) {
         this.initButton(element);
+        this.initValuable();
 
-        this.value = chapatt.Value.new();
+        this.toggleButtons.push(this);
 
         this.signalConnect('clicked', this.toggle.bind(this));
 
-        this.value.signalConnect('valueChanged', this.handleValueChanged.bind(this));
+        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
 
         if (this.element.classList.contains('selected'))
-            this.value.setValue('selected');
+            this.valueModel.setValue('selected');
         else
-            this.value.setValue('unselected');
+            this.valueModel.setValue('unselected');
     },
 
     toggle: function() {
-        if (this.value.getValue() == 'selected') {
-            this.value.setValue('unselected');
+        if (this.valueModel.getValue() == 'selected') {
+            this.valueModel.setValue('unselected');
         } else {
-            this.value.setValue('selected');
+            this.valueModel.setValue('selected');
         }
     },
 
