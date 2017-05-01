@@ -1,71 +1,75 @@
-widget
-textBox
-	inherits widget
-button
-	inherits widget
+Widget
+TextBox
+	inherits Widget
+Button
+	inherits Widget
 
-	mixes-in emitter
+	mixes-in Emitter
 toggleButton
-	inherits button
+	inherits Button
 
-	mixes-in value
+	mixes-in Valuable
 spinBox
-	inherits widget
+	inherits Widget
 
-	mixes-in numericalValue
+	mixes-in Valuable
 
-        has a textBox
-	has buttons
+        has a TextBox
+	has Buttons
 slider
-	inherits spinbox
+	inherits Spinbox
 
-	has a bar
-buttonGroup
-	inherits widget
+	has a Bar
+ButtonGroup
+	inherits Widget
 
-	mixes-in emitter
+	mixes-in Emitter
 
-	has buttons
-splitButton
-	inherits buttonGroup
+	has Buttons
+SplitButton
+	inherits ButtonGroup
 
-	mixes-in emitter
-	mixes-in dropDown
+	mixes-in Emitter
+	mixes-in DropDown
 
-	has buttons
-toggleButtonGroup
-	inherits widget
+	has Buttons
+ToggleButtonGroup
+	inherits Widget
 
-	mixes-in value
+	mixes-in Valuable
 
-	has toggleButtons
+	has ToggleButtons
 
-	can behave like a radioButton, checkBox, or listBox
+	note: can behave like a RadioButton, CheckBox, or ListBox
 		depending on selection rules
-dropDownList
-	inherits toggleButtonGroup
+DropDownList
+	inherits ToggleButtonGroup
 
-	mixes-in dropDown
-menu
-	inherits widget
+	mixes-in DropDown
+Menu
+	inherits Widget
 
-	mixes-in dropDown
+	mixes-in DropDown
 
-	has menus
-	has buttons
-	has toggleButtons
-	has toggleButtonGroups
-contextMenu/pieMenu
-	inherits menu
-value
-	mixes-in emitter
-
-        has a valueModel
-numericalValue
-	inherits value
-emitter
-	has signals
-signal
-dropDown
-bar
-valueModel
+	has Menus
+	has Buttons
+	has ToggleButtons
+	has ToggleButtonGroups
+ContextMenu/PieMenu
+	inherits Menu
+ValueModel
+	mixes-in Emitter
+Numerical
+Quantized
+Unit
+	note: only guaranteed valid in one UnitModel,
+		as they're defined relative to first sibling Unit
+UnitModel
+	has Units
+Valuable
+        has a ValueModel
+Emitter
+	has Signals
+Signal
+DropDown
+Bar

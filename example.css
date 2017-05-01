@@ -42,11 +42,11 @@
  * textBox
  */
 
-.example-text-box > * {
+.example-text-box > .field > * {
   padding: 0 var(--padding);
 }
 
-.example-text-box > * {
+.example-text-box > .field > * {
   display: inline-block;
   position: absolute;
   top: 50%;
@@ -55,18 +55,18 @@
   width: 100%;
 }
 
-.example-text-box > .field {
+.example-text-box > .field > * {
   cursor: text;
   overflow: hidden;
   white-space: nowrap;
   z-index: 1;
 }
 
-.example-text-box > .field:not(:empty) ~ .hint {
+.example-text-box > .field > *:not(:empty) ~ .hint {
   visibility: hidden;
 }
 
-.example-text-box > .hint {
+.example-text-box > .field > .hint {
   color: var(--color-border);
   z-index: 0;
 }

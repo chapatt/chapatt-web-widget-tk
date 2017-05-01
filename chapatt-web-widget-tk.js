@@ -61,6 +61,71 @@ chapatt.Emitter = {
     }
 }
 
+chapatt.Unit = {
+    initUnit: function(initialName, initialSymbol, initialConvFrom, initialConvTo) {
+        if (initialName) {
+            this.name = initialName;
+            if (initialSymbol) {
+                this.symbol = initialSymbol;
+                if (initialConvFrom) {
+                    this.convFrom = initialConvFrom;
+                    if (initialConvTo) {
+                        this.convTo = initialConvTo;
+                    }
+                }
+            }
+        }
+    },
+
+    new: function(initialName, initialSymbol, initialConvFrom, initialConvTo) {
+        var unit = Object.create(this);
+        unit.initUnit.apply(unit, function() {
+            var args = [];
+
+            if (initialName) {
+                args.push(initialName);
+                if (initialSymbol) {
+                    args.push(initialSymbol);
+                    if (initialConvFrom) {
+                        args.push(initialConvFrom);
+                        if (initialConvTo) {
+                            args.push(initialConvTo);
+                        }
+                    }
+                }
+            }
+
+            return args;
+        }());
+        return unit;
+    }
+}
+
+chapatt.UnitModel = {
+    initUnitModel: function(initialUnits) {
+        this.units = [];
+
+        if (initialUnits) {
+            this.addUnits(initialUnits);
+        }
+    },
+
+    addUnits: function(units) {
+        units.forEach(function(item) {
+            this.units.push(item);
+        }.bind(this));
+    },
+
+    valueFromToUnit: function(value, fromUnitIndex, toUnitIndex) {
+    },
+
+    new: function() {
+        var unitModel = Object.create(this);
+        unitModel.initUnitModel();
+        return unitModel;
+    }
+}
+
 chapatt.ValueModel = {};
 Object.assign(chapatt.ValueModel, chapatt.Emitter);
 Object.assign(chapatt.ValueModel,
@@ -68,10 +133,34 @@ Object.assign(chapatt.ValueModel,
     initValueModel: function() {
         this.initEmitter();
         this.addSignal('valueChanged');
+
+        this.unitModel = chapatt.UnitModel.new();
+        this.unitIndex = 0;
     },
 
-    getValue: function() {
-        return this.value;
+    getUnitModel: function() {
+        return this.unitModel;
+    },
+
+    setUnitModel: function(unitModel) {
+        this.unitModel = unitModel;
+    },
+
+    getUnit: function() {
+        return this.unitIndex;
+    },
+
+    setUnit: function(unitIndex) {
+        this.unitIndex = unitIndex;
+    },
+
+    /* If no unitIndex given, get value in current unit */
+    getValue: function(unitIndex) {
+        if (!unitIndex) {
+            return this.value;
+        } else {
+            return this.unitModel.valueFromToUnit(this.value, this.unitIndex, unitIndex);
+        }
     },
 
     setValue: function(value) {
@@ -115,6 +204,71 @@ chapatt.Widget = {
         });
     }
 }
+
+chapatt.TextBox = Object.create(chapatt.Widget);
+Object.assign(chapatt.TextBox, chapatt.Valuable);
+Object.assign(chapatt.TextBox,
+{
+    textBoxes: [],
+
+    initTextBox: function(element) {
+        this.initWidget(element);
+        this.initValuable();
+
+        this.textBoxes.push(this);
+
+        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
+
+        var field = this.element.getElementsByClassName('field')[0].firstElementChild;
+        field.addEventListener('keydown', this.fieldHandleKeydown.bind(this));
+        field.addEventListener('focusout', this.fieldHandleFocusout.bind(this));
+
+        this.mutatedSinceSaved = false;
+        var fieldObserver = new MutationObserver(this.fieldHandleMutation.bind(this));
+        fieldObserver.observe(field, {characterData: true, subtree: true});
+    },
+
+    handleValueChanged: function(targetWidget, signalName, signalData)  {
+        var field = this.element.getElementsByClassName('field')[0].firstElementChild;
+        field.textContent = signalData;
+    },
+
+    fieldHandleKeydown: function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+
+            // FIXME! if set to change on enter
+            this.saveFieldText();
+        }
+    },
+
+    fieldHandleFocusout: function(event) {
+        // FIXME! if set to change on mouseout
+            // only save if text has mutated (to prevent rounding of actual value to display value)
+            if (this.mutatedSinceSaved)
+                this.saveFieldText();
+    },
+
+    fieldHandleMutation: function(mutations) {
+        this.mutatedSinceSaved = true;
+
+        // FIXME! if set to change on mutation
+        //this.saveFieldText();
+    },
+
+    saveFieldText: function() {
+        var field = this.element.getElementsByClassName('field')[0].firstElementChild;
+        this.valueModel.setValue(field.textContent);
+
+        this.mutatedSinceSaved = false;
+    },
+
+    new: function(element) {
+        var textBox = Object.create(this);
+        textBox.initTextBox(element);
+        return textBox;
+    }
+});
 
 chapatt.Button = Object.create(chapatt.Widget);
 Object.assign(chapatt.Button, chapatt.Emitter);
@@ -193,5 +347,64 @@ Object.assign(chapatt.ToggleButton,
         var toggleButton = Object.create(this);
         toggleButton.initToggleButton(element);
         return toggleButton;
+    }
+});
+
+chapatt.SpinBox = Object.create(chapatt.Widget);
+Object.assign(chapatt.SpinBox, chapatt.Valuable);
+Object.assign(chapatt.SpinBox,
+{
+    initSpinBox: function(element) {
+        this.initWidget(element);
+        this.initValuable();
+
+        /* FIXME! initialize value properly */
+        this.valueModel.setValue(0);
+
+        this.field = chapatt.TextBox.new(this.element);
+        this.field.getValueModel().signalConnect('valueChanged',
+            this.handleFieldValueChanged.bind(this));
+
+        this.increaseButton = chapatt.Button.new(this.element.getElementsByClassName('increase')[0]);
+        this.decreaseButton = chapatt.Button.new(this.element.getElementsByClassName('decrease')[0]);
+
+        this.increaseButton.element.addEventListener('click', this.increase.bind(this));
+        this.decreaseButton.element.addEventListener('click', this.decrease.bind(this));
+
+        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
+    },
+
+    handleFieldValueChanged: function(targetWidget, signalName, signalData) {
+        if (isNaN(Number(signalData))) {
+            // Not a number; attempt to parse as number with suffix
+            this.valueModel.unitModel.units.forEach(function(unit) {
+                if (signalData.endsWith(unit.symbol)) {
+                    // FIXME! optionally switch to this unit by default
+                    this.valueModel.setValue(unit.convFrom(Number(signalData.slice(0, -unit.symbol.length))));
+                }
+            }.bind(this));
+        } else {
+            this.valueModel.setValue(Number(signalData));
+        }
+    },
+
+    increase: function() {
+        this.valueModel.setValue(this.valueModel.getValue() + 1);
+    },
+
+    decrease: function() {
+        this.valueModel.setValue(this.valueModel.getValue() - 1);
+    },
+
+    handleValueChanged: function(targetWidget, signalName, signalData) {
+        var field = this.element.getElementsByClassName('field')[0].firstElementChild;
+        // FIXME! round before displaying
+        field.textContent = signalData;
+    },
+
+    new: function(element) {
+        var spinBox = Object.create(this);
+        spinBox.initSpinBox(element);
+        return spinBox;
     }
 });

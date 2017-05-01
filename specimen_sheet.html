@@ -8,6 +8,11 @@
   <script type="text/javascript" src="chapatt-web-widget-tk.js"></script>
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
+        var textBox1 = chapatt.TextBox.new(document.getElementById('text-box-1'));
+        textBox1.getValueModel().signalConnect('valueChanged', function() {
+            console.log('text-box-1: valueChanged');
+        });
+
         var button1 = chapatt.Button.new(document.getElementById('button-1'));
         button1.signalConnect('clicked',
             function(targetWidget, signalName, signalData, userData) {
@@ -46,6 +51,33 @@
         toggleButton2.signalConnect('clicked', function() {
             console.log('toggle-button-2: clicked');
         });
+
+        var spinBox1 = chapatt.SpinBox.new(document.getElementById('spin-box-1'));
+        function identity(obj) {
+            return obj;
+        }
+        spinBox1.getValueModel().getUnitModel().addUnits([
+            chapatt.Unit.new('radian', 'rad', identity, identity),
+            chapatt.Unit.new('degree', 'deg',
+                function(valueAsThis) {
+                    return (valueAsThis / 360) * (2 * Math.PI);
+                },
+                function(valueAsDefault) {
+                    return (valueAsDefault / (2 * Math.PI)) * 360;
+                }
+            ),
+            chapatt.Unit.new('miliradian', 'mil',
+                function(valueAsThis) {
+                    return valueAsThis / 1000;
+                },
+                function(valueAsDefault) {
+                    return valueAsDefault * 1000;
+                }
+            )
+        ]);
+        spinBox1.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
+            console.log('spin-box-1: value changed from ' +spinBox1.getValueModel().getValue() + ' to ' + signalData);
+        });
     });
   </script>
 </head>
@@ -56,8 +88,10 @@
     <dt>TextBox</dt>
     <dd>
       <div id="text-box-1" class="example-widget example-text-box" style="width: 15em;">
-        <div class="field" contenteditable="true"></div>
-        <div class="hint">text goes here</div>
+        <div class="field">
+            <div contenteditable="true"></div>
+            <div class="hint">text goes here</div>
+        </div>
       </div>
     </dd>
 
