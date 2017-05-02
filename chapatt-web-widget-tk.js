@@ -391,11 +391,11 @@ Object.assign(chapatt.SpinBox,
     },
 
     increase: function() {
-        this.valueModel.setValue(this.valueModel.getValue() + 1);
+        this.valueModel.setValue(this.valueModel.getValue() + this.valueModel.getUnitModel().units[this.valueModel.getUnit()].convFrom(1));
     },
 
     decrease: function() {
-        this.valueModel.setValue(this.valueModel.getValue() - 1);
+        this.valueModel.setValue(this.valueModel.getValue() - this.valueModel.getUnitModel().units[this.valueModel.getUnit()].convFrom(1));
     },
 
     handleValueChanged: function(targetWidget, signalName, signalData) {
