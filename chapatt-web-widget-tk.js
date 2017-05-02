@@ -135,7 +135,7 @@ Object.assign(chapatt.ValueModel,
         this.addSignal('valueChanged');
 
         this.unitModel = chapatt.UnitModel.new();
-        this.unitIndex = 0;
+        this.unitIndex = 1;
     },
 
     getUnitModel: function() {
@@ -377,14 +377,16 @@ Object.assign(chapatt.SpinBox,
     handleFieldValueChanged: function(targetWidget, signalName, signalData) {
         if (isNaN(Number(signalData))) {
             // Not a number; attempt to parse as number with suffix
-            this.valueModel.unitModel.units.forEach(function(unit) {
+            this.valueModel.unitModel.units.forEach(function(unit, index) {
                 if (signalData.endsWith(unit.symbol)) {
-                    // FIXME! optionally switch to this unit by default
+                    // if set to switch to this unit by default
+                    this.valueModel.setUnit(index);
+
                     this.valueModel.setValue(unit.convFrom(Number(signalData.slice(0, -unit.symbol.length))));
                 }
             }.bind(this));
         } else {
-            this.valueModel.setValue(Number(signalData));
+            this.valueModel.setValue(this.valueModel.unitModel.units[this.valueModel.unitIndex].convFrom(Number(signalData)));
         }
     },
 
@@ -399,7 +401,10 @@ Object.assign(chapatt.SpinBox,
     handleValueChanged: function(targetWidget, signalName, signalData) {
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         // FIXME! round before displaying
-        field.textContent = signalData;
+        field.textContent = this.valueModel.unitModel.units[this.valueModel.unitIndex].convTo(signalData);
+
+        // FIXME! if set to show unit suffix
+        field.textContent = field.textContent + ' ' + this.valueModel.unitModel.units[this.valueModel.unitIndex].symbol;
     },
 
     new: function(element) {
