@@ -362,7 +362,7 @@ Object.assign(chapatt.SpinBox,
         this.valueModel.setValue(0);
 
         this.field = chapatt.TextBox.new(this.element);
-        this.field.getValueModel().signalConnect('valueChanged',
+        this.field.valueModel.signalConnect('valueChanged',
             this.handleFieldValueChanged.bind(this));
 
         this.increaseButton = chapatt.Button.new(this.element.getElementsByClassName('increase')[0]);
