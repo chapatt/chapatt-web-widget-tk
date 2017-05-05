@@ -375,18 +375,22 @@ Object.assign(chapatt.SpinBox,
     },
 
     handleFieldValueChanged: function(targetWidget, signalName, signalData) {
-        if (isNaN(Number(signalData))) {
+        this.setValueParsingString(signalData);
+    },
+
+    setValueParsingString: function(string) {
+        if (isNaN(Number(string))) {
             // Not a number; attempt to parse as number with suffix
             this.valueModel.unitModel.units.forEach(function(unit, index) {
-                if (signalData.endsWith(unit.symbol)) {
+                if (string.endsWith(unit.symbol)) {
                     // if set to switch to this unit by default
                     this.valueModel.setUnit(index);
 
-                    this.valueModel.setValue(unit.convFrom(Number(signalData.slice(0, -unit.symbol.length))));
+                    this.valueModel.setValue(unit.convFrom(Number(string.slice(0, -unit.symbol.length))));
                 }
             }.bind(this));
         } else {
-            this.valueModel.setValue(this.valueModel.unitModel.units[this.valueModel.unitIndex].convFrom(Number(signalData)));
+            this.valueModel.setValue(this.valueModel.unitModel.units[this.valueModel.unitIndex].convFrom(Number(string)));
         }
     },
 
