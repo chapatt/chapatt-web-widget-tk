@@ -1,5 +1,5 @@
 /*
- * widget
+ * Widget
  */
 
 .example-widget {
@@ -39,7 +39,7 @@
 
 
 /*
- * textBox
+ * TextBox
  */
 
 .example-text-box > .field > * {
@@ -76,7 +76,7 @@
 
 
 /*
- * button
+ * Button
  */
 
 .example-button {
@@ -105,7 +105,7 @@
 
 
 /*
- * toggleButton
+ * ToggleButton
  */
 
 .example-toggle-button.selected {
@@ -125,7 +125,7 @@
 
 
 /*
- * spinBox
+ * SpinBox
  */
 
 .example-spin-box:hover {
@@ -234,7 +234,7 @@
 
 
 /*
- * slider
+ * Slider
  */
 
 .example-slider {
@@ -411,7 +411,7 @@
 
 
 /*
- * buttonGroup
+ * ButtonGroup
  */
 
 .example-button-group {
@@ -437,7 +437,7 @@
 
 
 /*
- * splitButton
+ * SplitButton
  */
 
 .example-split-button.dropped {
@@ -514,7 +514,7 @@
 
 
 /*
- * dropDownList, splitButton alternative with added functionality
+ * DropDownList, SplitButton alternative with added functionality
  *   to allow switching the default button dynamically
  */
 
@@ -619,7 +619,7 @@
 
 
 /*
- * menu
+ * Menu
  */
 
 ul.example-menu {
