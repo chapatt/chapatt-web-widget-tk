@@ -52,11 +52,10 @@
             console.log('toggle-button-2: clicked');
         });
 
-        var spinBox1 = chapatt.SpinBox.new(document.getElementById('spin-box-1'));
         function identity(obj) {
             return obj;
         }
-        spinBox1.getValueModel().getUnitModel().addUnits([
+        var spinBox1Units = [
             chapatt.Unit.new('radian', 'rad', identity, identity),
             chapatt.Unit.new('degree', 'deg',
                 function(valueAsThis) {
@@ -74,7 +73,8 @@
                     return valueAsDefault * 1000;
                 }
             )
-        ]);
+        ];
+        var spinBox1 = chapatt.SpinBox.new(document.getElementById('spin-box-1'), spinBox1Units);
         spinBox1.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
             console.log('spin-box-1: value changed from ' +spinBox1.getValueModel().getValue() + ' to ' + signalData);
         });

@@ -354,12 +354,12 @@ chapatt.SpinBox = Object.create(chapatt.Widget);
 Object.assign(chapatt.SpinBox, chapatt.Valuable);
 Object.assign(chapatt.SpinBox,
 {
-    initSpinBox: function(element) {
+    initSpinBox: function(element, initialUnits) {
         this.initWidget(element);
         this.initValuable();
+        this.valueModel.getUnitModel().addUnits(initialUnits);
 
-        /* FIXME! initialize value properly */
-        this.valueModel.setValue(0);
+        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
 
         this.field = chapatt.TextBox.new(this.element);
         this.field.valueModel.signalConnect('valueChanged',
@@ -371,7 +371,8 @@ Object.assign(chapatt.SpinBox,
         this.increaseButton.element.addEventListener('click', this.increase.bind(this));
         this.decreaseButton.element.addEventListener('click', this.decrease.bind(this));
 
-        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
+        var field = this.element.getElementsByClassName('field')[0].firstElementChild;
+        this.setValueParsingString(field.textContent);
     },
 
     handleFieldValueChanged: function(targetWidget, signalName, signalData) {
@@ -381,7 +382,7 @@ Object.assign(chapatt.SpinBox,
     setValueParsingString: function(string) {
         if (isNaN(Number(string))) {
             // Not a number; attempt to parse as number with suffix
-            this.valueModel.unitModel.units.forEach(function(unit, index) {
+            this.valueModel.getUnitModel().units.forEach(function(unit, index) {
                 if (string.endsWith(unit.symbol)) {
                     // if set to switch to this unit by default
                     this.valueModel.setUnit(index);
@@ -390,7 +391,7 @@ Object.assign(chapatt.SpinBox,
                 }
             }.bind(this));
         } else {
-            this.valueModel.setValue(this.valueModel.unitModel.units[this.valueModel.unitIndex].convFrom(Number(string)));
+            this.valueModel.setValue(this.valueModel.getUnitModel().units[this.valueModel.unitIndex].convFrom(Number(string)));
         }
     },
 
@@ -405,15 +406,15 @@ Object.assign(chapatt.SpinBox,
     handleValueChanged: function(targetWidget, signalName, signalData) {
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         // FIXME! round before displaying
-        field.textContent = this.valueModel.unitModel.units[this.valueModel.unitIndex].convTo(signalData);
+        field.textContent = this.valueModel.getUnitModel().units[this.valueModel.unitIndex].convTo(signalData);
 
         // FIXME! if set to show unit suffix
-        field.textContent = field.textContent + ' ' + this.valueModel.unitModel.units[this.valueModel.unitIndex].symbol;
+        field.textContent = field.textContent + ' ' + this.valueModel.getUnitModel().units[this.valueModel.unitIndex].symbol;
     },
 
-    new: function(element) {
+    new: function(element, initialUnits) {
         var spinBox = Object.create(this);
-        spinBox.initSpinBox(element);
+        spinBox.initSpinBox(element, initialUnits);
         return spinBox;
     }
 });
