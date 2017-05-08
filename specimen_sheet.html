@@ -78,6 +78,11 @@
         spinBox1.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
             console.log('spin-box-1: value changed from ' +spinBox1.getValueModel().getValue() + ' to ' + signalData);
         });
+
+        var spinBox2 = chapatt.SpinBox.new(document.getElementById('spin-box-2'), spinBox1Units);
+        spinBox2.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
+            console.log('spin-box-2: value changed from ' +spinBox2.getValueModel().getValue() + ' to ' + signalData);
+        });
     });
   </script>
 </head>
@@ -135,7 +140,7 @@
           <div style="font-size: 0.6em;">&#x25c0;</div>
         </div>
         <div class="field">
-          <div contenteditable="true">142.5</div>
+          <div contenteditable="true">90</div>
         </div>
         <div class="increase">
           <div style="font-size: 0.6em;">&#x25b6;</div>
@@ -143,7 +148,9 @@
       </div>
 
       <div id="spin-box-2" class="example-widget example-spin-box-tall">
-        <div class="field" contenteditable="true">142.5</div>
+        <div class="field">
+          <div contenteditable="true">90</div>
+        </div>
         <div class="controls">
           <div class="increase">
             <div style="font-size: 0.6em;">&#x25b2;</div>
