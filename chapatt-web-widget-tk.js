@@ -359,6 +359,10 @@ Object.assign(chapatt.SpinBox,
         this.initValuable();
         this.valueModel.getUnitModel().addUnits(initialUnits);
 
+        // the magnitude of the wheel delta which results in 1 unit change.
+        // Larger values result in finer adjustment
+        this.scrollPixelsPerUnit = 10;
+
         this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
 
         this.field = chapatt.TextBox.new(this.element);
@@ -370,6 +374,8 @@ Object.assign(chapatt.SpinBox,
 
         this.increaseButton.element.addEventListener('click', this.increase.bind(this));
         this.decreaseButton.element.addEventListener('click', this.decrease.bind(this));
+
+        this.element.addEventListener('wheel', this.handleWheel.bind(this));
 
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         this.setValueParsingString(field.textContent);
@@ -410,6 +416,13 @@ Object.assign(chapatt.SpinBox,
 
         // FIXME! if set to show unit suffix
         field.textContent = field.textContent + ' ' + this.valueModel.getUnitModel().units[this.valueModel.unitIndex].symbol;
+    },
+
+    handleWheel: function(event) {
+        // FIXME! add x and y scrolling
+        this.valueModel.setValue(this.valueModel.getValue() + this.valueModel.getUnitModel().units[this.valueModel.getUnit()].convFrom(-event.deltaY / this.scrollPixelsPerUnit));
+
+        event.preventDefault();
     },
 
     new: function(element, initialUnits) {
