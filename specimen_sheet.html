@@ -81,7 +81,12 @@
 
         var spinBox2 = chapatt.SpinBox.new(document.getElementById('spin-box-2'), spinBox1Units);
         spinBox2.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
-            console.log('spin-box-2: value changed from ' +spinBox2.getValueModel().getValue() + ' to ' + signalData);
+            console.log('spin-box-2: value changed from ' + spinBox2.getValueModel().getValue() + ' to ' + signalData);
+        });
+
+        var buttonGroup1 = chapatt.ButtonGroup.new(document.getElementById('button-group-1'));
+        buttonGroup1.signalConnect('clicked', function(targetWidget, signalName, signalData, userData) {
+            console.log('button-group-1: clicked button with index ' + signalData);
         });
     });
   </script>

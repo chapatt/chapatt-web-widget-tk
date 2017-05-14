@@ -283,7 +283,7 @@ Object.assign(chapatt.Button,
         this.buttons.push(this);
 
         this.addSignal('clicked');
-        this.element.addEventListener('click', this.handleClick.bind(this, event));
+        this.element.addEventListener('click', this.handleClick.bind(this));
 
         this.element.addEventListener('mousedown', function(event)
         {
@@ -291,7 +291,7 @@ Object.assign(chapatt.Button,
         });
     },
 
-    handleClick: function(event) {
+    handleClick: function() {
             this.signalEmit('clicked');
     },
 
@@ -429,5 +429,46 @@ Object.assign(chapatt.SpinBox,
         var spinBox = Object.create(this);
         spinBox.initSpinBox(element, initialUnits);
         return spinBox;
+    }
+});
+
+chapatt.ButtonGroup = Object.create(chapatt.Widget);
+Object.assign(chapatt.ButtonGroup, chapatt.Emitter);
+Object.assign(chapatt.ButtonGroup,
+{
+    buttonGroups: [],
+
+    initButtonGroup: function(element) {
+        this.initWidget(element);
+        this.initEmitter();
+
+        this.buttonGroups.push(this);
+
+        this.addSignal('clicked');
+        this.buttons = [];
+        this.initButtons();
+
+        this.element.addEventListener('mousedown', function(event)
+        {
+            event.preventDefault();
+        });
+    },
+
+    initButtons: function() {
+        var buttons = this.element.getElementsByClassName('button');
+        for (var i = 0; i < buttons.length; i++) {
+            this.buttons.push(buttons[i]);
+            buttons[i].addEventListener('click', this.handleClick.bind(this, i));
+        }
+    },
+
+    handleClick: function(buttonIndex) {
+            this.signalEmit('clicked', buttonIndex);
+    },
+
+    new: function(element) {
+        var buttonGroup = Object.create(this);
+        buttonGroup.initButtonGroup(element);
+        return buttonGroup;
     }
 });
