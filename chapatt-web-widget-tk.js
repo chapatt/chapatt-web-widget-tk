@@ -362,6 +362,20 @@ Object.assign(chapatt.SpinBox,
         // the magnitude of the wheel delta which results in 1 unit change.
         // Larger values result in finer adjustment
         this.scrollPixelsPerUnit = 10;
+        // the magnitude of the mousemove delta which results in 1 unit change.
+        // Larger values result in finer adjustment
+        this.mousemovePixelsPerUnit = 75;
+
+        // if a mousedown was received in the SpinBox and the corresponding mouseup
+        // hasn't yet been received
+        this.mouseIsDown = false;
+
+        // minimum mousemove before it affects the value
+        this.dragMinimumMovement = 10;
+        this.dragMinimumMovementExceeded = false;
+
+        this.cursorYOnMousedown = null;
+        this.valueOnMousedown = null;
 
         this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
 
@@ -374,11 +388,42 @@ Object.assign(chapatt.SpinBox,
 
         this.increaseButton.element.addEventListener('click', this.increase.bind(this));
         this.decreaseButton.element.addEventListener('click', this.decrease.bind(this));
-
         this.element.addEventListener('wheel', this.handleWheel.bind(this));
+        this.element.addEventListener('mousedown', this.handleMousedown.bind(this));
+        document.documentElement.addEventListener('mousemove', this.handleMousemove.bind(this));
+        document.documentElement.addEventListener('mouseup', this.handleMouseup.bind(this));
 
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         this.setValueParsingString(field.textContent);
+    },
+
+    handleMousedown: function(event) {
+        this.cursorYOnMousedown = event.clientY;
+        this.valueOnMousedown = this.valueModel.getValue();
+        this.mouseIsDown = true;
+    },
+
+    handleMousemove: function(event) {
+        if (this.mouseIsDown) {
+            var deltaY = this.cursorYOnMousedown - event.clientY;
+
+            if (Math.abs(deltaY) >= this.dragMinimumMovement) {
+                this.dragMinimumMovementExceeded = true;
+            }
+
+            if (this.dragMinimumMovementExceeded) {
+                this.valueModel.setValue(this.valueOnMousedown + (deltaY / this.mousemovePixelsPerUnit));
+            }
+
+            event.preventDefault();
+        }
+    },
+
+    handleMouseup: function(event) {
+        if (this.mouseIsDown) {
+            this.mouseIsDown = false;
+            this.dragMinimumMovementExceeded = false;
+        }
     },
 
     handleFieldValueChanged: function(targetWidget, signalName, signalData) {
