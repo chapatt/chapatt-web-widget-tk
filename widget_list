@@ -5,19 +5,21 @@ Button
 	inherits Widget
 
 	mixes-in Emitter
-toggleButton
+ToggleButton
 	inherits Button
 
 	mixes-in Valuable
-spinBox
+SpinBox
 	inherits Widget
 
 	mixes-in Valuable
 
         has a TextBox
 	has Buttons
-slider
+Slider
 	inherits Spinbox
+
+	mixes Bounded into its valueModel
 
 	has a Bar
 ButtonGroup
@@ -59,8 +61,10 @@ ContextMenu/PieMenu
 	inherits Menu
 ValueModel
 	mixes-in Emitter
-Numerical
-Quantized
+
+	can mix-in Numerical
+	can mix-in Quantized
+	can mix-in Bounded
 Unit
 	note: only guaranteed valid in one UnitModel,
 		as they're defined relative to first sibling Unit
@@ -73,3 +77,6 @@ Emitter
 Signal
 DropDown
 Bar
+        inherits Widget
+
+	mixes-in Valuable
