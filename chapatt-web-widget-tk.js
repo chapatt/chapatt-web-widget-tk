@@ -164,6 +164,9 @@ Object.assign(chapatt.ValueModel,
     },
 
     setValue: function(value) {
+        if (this.value == value)
+            return;
+
         this.signalEmit('valueChanged', value);
         this.value = value;
     },
