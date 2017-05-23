@@ -84,6 +84,19 @@
             console.log('spin-box-2: value changed from ' + spinBox2.getValueModel().getValue() + ' to ' + signalData);
         });
 
+        var bar1 = chapatt.Bar.new(document.getElementById('bar-1'));
+        bar1.getValueModel().setValue(2 / 3);
+
+        var slider1 = chapatt.Slider.new(document.getElementById('slider-1'), spinBox1Units, 0, 2 * Math.PI);
+        slider1.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
+            console.log('slider-1: value changed from ' + slider1.getValueModel().getValue() + ' to ' + signalData);
+        });
+
+        var slider2 = chapatt.Slider.new(document.getElementById('slider-2'), spinBox1Units, 0, 2 * Math.PI);
+        slider2.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
+            console.log('slider-2: value changed from ' + slider1.getValueModel().getValue() + ' to ' + signalData);
+        });
+
         var buttonGroup1 = chapatt.ButtonGroup.new(document.getElementById('button-group-1'));
         buttonGroup1.signalConnect('clicked', function(targetWidget, signalName, signalData, userData) {
             console.log('button-group-1: clicked button with index ' + signalData);
@@ -167,6 +180,13 @@
       </div>
     </dd>
 
+    <dt>Bar</dt>
+    <dd>
+      <div id="bar-1" class="example-widget example-bar" style="width: 15em;">
+        <div class="bar" style="width: 50%;"></div>
+      </div>
+    </dd>
+
 
     <dt>Slider</dt>
     <dd>
@@ -183,7 +203,7 @@
             <div style="font-size: 0.6em;">&#x25b6;</div>
           </div>
           <div class="field">
-            <div contenteditable="true">50%</div>
+            <div contenteditable="true">180 deg</div>
           </div>
         </div>
       </div>
@@ -196,7 +216,7 @@
               <div>X:</div>
             </div>
             <div class="field">
-              <div contenteditable="true">50%</div>
+              <div contenteditable="true">180 deg</div>
             </div>
           </div>
         </div>

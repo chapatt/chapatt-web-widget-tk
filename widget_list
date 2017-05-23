@@ -80,3 +80,5 @@ Bar
         inherits Widget
 
 	mixes-in Valuable
+
+	mixes Bounded into its valueModel

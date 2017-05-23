@@ -178,6 +178,47 @@ Object.assign(chapatt.ValueModel,
     }
 });
 
+chapatt.Bounded = {
+    setValue: function(value) {
+        if (this.value == value) {
+            return;
+        }
+
+        if (value < this.minimum) {
+            if (this.value == this.minimum)
+                return;
+
+            this.signalEmit('valueChanged', this.minimum);
+            this.value = this.minimum;
+        } else if (value > this.maximum) {
+            if (this.value == this.maximum)
+                return;
+
+            this.signalEmit('valueChanged', this.maximum);
+            this.value = this.maximum;
+        } else {
+            this.signalEmit('valueChanged', value);
+            this.value = value;
+        }
+    },
+
+    getMinimum: function() {
+        return this.minimum;
+    },
+
+    setMinimum: function(minimum) {
+        this.minimum = minimum;
+    },
+
+    getMaximum: function() {
+        return this.maximum;
+    },
+
+    setMaximum: function(maximum) {
+        this.maximum = maximum;
+    }
+};
+
 chapatt.Valuable = {
     initValuable: function() {
         this.valueModel = chapatt.ValueModel.new();
@@ -477,6 +518,60 @@ Object.assign(chapatt.SpinBox,
         var spinBox = Object.create(this);
         spinBox.initSpinBox(element, initialUnits);
         return spinBox;
+    }
+});
+
+chapatt.Bar = Object.create(chapatt.Widget);
+Object.assign(chapatt.Bar, chapatt.Valuable);
+Object.assign(chapatt.Bar,
+{
+    initBar: function(element) {
+        this.initWidget(element);
+        this.initValuable();
+
+        Object.assign(this.valueModel, chapatt.Bounded);
+        this.valueModel.setMinimum(0);
+        this.valueModel.setMaximum(1);
+
+        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
+    },
+
+    handleValueChanged: function(targetWidget, signalName, signalData) {
+        var bar = this.element.getElementsByClassName('bar')[0];
+        bar.style.width = signalData * 100 + '%';
+    },
+
+    new: function(element) {
+        var bar = Object.create(this);
+        bar.initBar(element);
+        return bar;
+    }
+});
+
+chapatt.Slider = Object.create(chapatt.SpinBox);
+Object.assign(chapatt.Slider,
+{
+    initSlider: function(element, initialUnits, minimum, maximum) {
+        this.initSpinBox(element, initialUnits);
+
+        Object.assign(this.valueModel, chapatt.Bounded);
+        this.valueModel.setMinimum(minimum);
+        this.valueModel.setMaximum(maximum);
+
+        this.bar = chapatt.Bar.new(this.element);
+
+        this.valueModel.signalConnect('valueChanged', this.setBar.bind(this));
+    },
+
+    setBar: function(targetWidget, signalName, signalData) {
+        var fraction = signalData / (this.valueModel.getMaximum() - this.valueModel.getMinimum());
+        this.bar.getValueModel().setValue(fraction);
+    },
+
+    new: function(element, initialUnits, minimum, maximum) {
+        var slider = Object.create(this);
+        slider.initSlider(element, initialUnits, minimum, maximum);
+        return slider;
     }
 });
 
