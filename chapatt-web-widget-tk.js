@@ -63,37 +63,30 @@ chapatt.Emitter = {
 
 chapatt.Unit = {
     initUnit: function(initialName, initialSymbol, initialConvFrom, initialConvTo) {
-        if (initialName) {
+        if (arguments.length >= 1)
             this.name = initialName;
-            if (initialSymbol) {
-                this.symbol = initialSymbol;
-                if (initialConvFrom) {
-                    this.convFrom = initialConvFrom;
-                    if (initialConvTo) {
-                        this.convTo = initialConvTo;
-                    }
-                }
-            }
-        }
+        if (arguments.length >= 2)
+            this.symbol = initialSymbol;
+        if (arguments.length >= 3)
+            this.convFrom = initialConvFrom;
+        if (arguments.length >= 4)
+            this.convTo = initialConvTo;
     },
 
     new: function(initialName, initialSymbol, initialConvFrom, initialConvTo) {
+        var argc = arguments.length;
         var unit = Object.create(this);
         unit.initUnit.apply(unit, function() {
             var args = [];
 
-            if (initialName) {
+            if (argc >= 1)
                 args.push(initialName);
-                if (initialSymbol) {
-                    args.push(initialSymbol);
-                    if (initialConvFrom) {
-                        args.push(initialConvFrom);
-                        if (initialConvTo) {
-                            args.push(initialConvTo);
-                        }
-                    }
-                }
-            }
+            if (argc >= 2)
+                args.push(initialSymbol);
+            if (argc >= 3)
+                args.push(initialConvFrom);
+            if (argc >= 4)
+                args.push(initialConvTo);
 
             return args;
         }());
@@ -475,41 +468,51 @@ Object.assign(chapatt.SpinBox,
     },
 
     setValueParsingString: function(string) {
+        var units = this.valueModel.getUnitModel().units;
         if (isNaN(Number(string))) {
             // Not a number; attempt to parse as number with suffix
-            this.valueModel.getUnitModel().units.forEach(function(unit, index) {
+            units.forEach(function(unit, index) {
                 if (string.endsWith(unit.symbol)) {
                     // if set to switch to this unit by default
                     this.valueModel.setUnit(index);
 
-                    this.valueModel.setValue(unit.convFrom(Number(string.slice(0, -unit.symbol.length))));
+                    var newValue = unit.convFrom(Number(string.slice(0, -unit.symbol.length)));
+                    this.valueModel.setValue(newValue);
                 }
             }.bind(this));
         } else {
-            this.valueModel.setValue(this.valueModel.getUnitModel().units[this.valueModel.unitIndex].convFrom(Number(string)));
+            var newValue = units[this.valueModel.unitIndex].convFrom(Number(string));
+            this.valueModel.setValue(newValue);
         }
     },
 
     increase: function() {
-        this.valueModel.setValue(this.valueModel.getValue() + this.valueModel.getUnitModel().units[this.valueModel.getUnit()].convFrom(1));
+        var units = this.valueModel.getUnitModel().units;
+        var newValue = this.valueModel.getValue() + units[this.valueModel.getUnit()].convFrom(1);
+        this.valueModel.setValue(newValue);
     },
 
     decrease: function() {
-        this.valueModel.setValue(this.valueModel.getValue() - this.valueModel.getUnitModel().units[this.valueModel.getUnit()].convFrom(1));
+        var units = this.valueModel.getUnitModel().units;
+        var newValue = this.valueModel.getValue() - units[this.valueModel.getUnit()].convFrom(1);
+        this.valueModel.setValue(newValue);
     },
 
     handleValueChanged: function(targetWidget, signalName, signalData) {
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         // FIXME! round before displaying
-        field.textContent = this.valueModel.getUnitModel().units[this.valueModel.unitIndex].convTo(signalData);
+        var units = this.valueModel.getUnitModel().units;
+        field.textContent = units[this.valueModel.unitIndex].convTo(signalData);
 
         // FIXME! if set to show unit suffix
-        field.textContent = field.textContent + ' ' + this.valueModel.getUnitModel().units[this.valueModel.unitIndex].symbol;
+        field.textContent = field.textContent + ' ' + units[this.valueModel.unitIndex].symbol;
     },
 
     handleWheel: function(event) {
         // FIXME! add x and y scrolling
-        this.valueModel.setValue(this.valueModel.getValue() + this.valueModel.getUnitModel().units[this.valueModel.getUnit()].convFrom(-event.deltaY / this.scrollPixelsPerUnit));
+        var units = this.valueModel.getUnitModel().units;
+        var newValue = this.valueModel.getValue() + units[this.valueModel.getUnit()].convFrom(-event.deltaY / this.scrollPixelsPerUnit);
+        this.valueModel.setValue(newValue);
 
         event.preventDefault();
     },
