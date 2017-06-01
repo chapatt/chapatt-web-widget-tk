@@ -339,39 +339,75 @@ Object.assign(chapatt.Button,
     }
 });
 
-chapatt.ToggleButton = Object.create(chapatt.Button);
-Object.assign(chapatt.ToggleButton, chapatt.Valuable);
-Object.assign(chapatt.ToggleButton,
-{
-    toggleButtons: [],
+chapatt.ValueTable = {
+    initValueTable: function(initialValues) {
+        this.values = [];
 
-    initToggleButton: function(element) {
+        initialValues.forEach(function(item) {
+            this.values.push(item);
+        }.bind(this));
+    },
+
+    addValue: function(value) {
+        this.values.push(value);
+    },
+
+    new: function(initialValues) {
+        var valueTable = Object.create(this);
+        valueTable.initValueTable(initialValues);
+        return valueTable;
+    }
+};
+
+chapatt.CycleButton = Object.create(chapatt.Button);
+Object.assign(chapatt.CycleButton, chapatt.Valuable);
+Object.assign(chapatt.CycleButton,
+{
+    cycleButtons: [],
+
+    initCycleButton: function(element, initialValues) {
         this.initButton(element);
         this.initValuable();
 
-        this.toggleButtons.push(this);
+        this.cycleButtons.push(this);
 
-        this.signalConnect('clicked', this.toggle.bind(this));
+        this.signalConnect('clicked', this.cycle.bind(this));
 
-        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
+        this.valueTable = chapatt.ValueTable.new(initialValues);
 
         if (this.element.classList.contains('selected'))
-            this.valueModel.setValue('selected');
+            this.valueModel.setValue(1);
         else
-            this.valueModel.setValue('unselected');
+            this.valueModel.setValue(0);
     },
 
-    toggle: function() {
-        if (this.valueModel.getValue() == 'selected') {
-            this.valueModel.setValue('unselected');
+    cycle: function() {
+        if ((value = this.valueModel.getValue()) < this.valueTable.values.length - 1) {
+            this.valueModel.setValue(value + 1);
         } else {
-            this.valueModel.setValue('selected');
+            this.valueModel.setValue(0);
         }
+    },
+
+    new: function(element, initialValues) {
+        var cycleButton = Object.create(this);
+        cycleButton.initCycleButton(element, initialValues);
+        return cycleButton;
+    }
+});
+
+chapatt.ToggleButton = Object.create(chapatt.CycleButton);
+Object.assign(chapatt.ToggleButton,
+{
+    initToggleButton: function(element) {
+        this.initCycleButton(element, [0, 1]);
+
+        this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
     },
 
     handleValueChanged: function(targetWidget, signalName, signalData) {
         classList = this.element.classList;
-        if (signalData == 'selected') {
+        if (signalData == 1) {
             if (!classList.contains('selected'))
                 classList.add('selected');
         } else {
