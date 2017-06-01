@@ -94,8 +94,8 @@ chapatt.Unit = {
     }
 }
 
-chapatt.UnitModel = {
-    initUnitModel: function(initialUnits) {
+chapatt.UnitTable = {
+    initUnitTable: function(initialUnits) {
         this.units = [];
 
         if (initialUnits) {
@@ -113,9 +113,9 @@ chapatt.UnitModel = {
     },
 
     new: function() {
-        var unitModel = Object.create(this);
-        unitModel.initUnitModel();
-        return unitModel;
+        var unitTable = Object.create(this);
+        unitTable.initUnitTable();
+        return unitTable;
     }
 }
 
@@ -127,16 +127,16 @@ Object.assign(chapatt.ValueModel,
         this.initEmitter();
         this.addSignal('valueChanged');
 
-        this.unitModel = chapatt.UnitModel.new();
+        this.unitTable = chapatt.UnitTable.new();
         this.unitIndex = 1;
     },
 
-    getUnitModel: function() {
-        return this.unitModel;
+    getUnitTable: function() {
+        return this.unitTable;
     },
 
-    setUnitModel: function(unitModel) {
-        this.unitModel = unitModel;
+    setUnitTable: function(unitTable) {
+        this.unitTable = unitTable;
     },
 
     getUnit: function() {
@@ -152,7 +152,7 @@ Object.assign(chapatt.ValueModel,
         if (!unitIndex) {
             return this.value;
         } else {
-            return this.unitModel.valueFromToUnit(this.value, this.unitIndex, unitIndex);
+            return this.unitTable.valueFromToUnit(this.value, this.unitIndex, unitIndex);
         }
     },
 
@@ -394,7 +394,7 @@ Object.assign(chapatt.SpinBox,
     initSpinBox: function(element, initialUnits) {
         this.initWidget(element);
         this.initValuable();
-        this.valueModel.getUnitModel().addUnits(initialUnits);
+        this.valueModel.getUnitTable().addUnits(initialUnits);
 
         // the magnitude of the wheel delta which results in 1 unit change.
         // Larger values result in finer adjustment
@@ -468,7 +468,7 @@ Object.assign(chapatt.SpinBox,
     },
 
     setValueParsingString: function(string) {
-        var units = this.valueModel.getUnitModel().units;
+        var units = this.valueModel.getUnitTable().units;
         if (isNaN(Number(string))) {
             // Not a number; attempt to parse as number with suffix
             units.forEach(function(unit, index) {
@@ -487,13 +487,13 @@ Object.assign(chapatt.SpinBox,
     },
 
     increase: function() {
-        var units = this.valueModel.getUnitModel().units;
+        var units = this.valueModel.getUnitTable().units;
         var newValue = this.valueModel.getValue() + units[this.valueModel.getUnit()].convFrom(1);
         this.valueModel.setValue(newValue);
     },
 
     decrease: function() {
-        var units = this.valueModel.getUnitModel().units;
+        var units = this.valueModel.getUnitTable().units;
         var newValue = this.valueModel.getValue() - units[this.valueModel.getUnit()].convFrom(1);
         this.valueModel.setValue(newValue);
     },
@@ -501,7 +501,7 @@ Object.assign(chapatt.SpinBox,
     handleValueChanged: function(targetWidget, signalName, signalData) {
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         // FIXME! round before displaying
-        var units = this.valueModel.getUnitModel().units;
+        var units = this.valueModel.getUnitTable().units;
         field.textContent = units[this.valueModel.unitIndex].convTo(signalData);
 
         // FIXME! if set to show unit suffix
@@ -510,7 +510,7 @@ Object.assign(chapatt.SpinBox,
 
     handleWheel: function(event) {
         // FIXME! add x and y scrolling
-        var units = this.valueModel.getUnitModel().units;
+        var units = this.valueModel.getUnitTable().units;
         var newValue = this.valueModel.getValue() + units[this.valueModel.getUnit()].convFrom(-event.deltaY / this.scrollPixelsPerUnit);
         this.valueModel.setValue(newValue);
 
