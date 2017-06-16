@@ -600,16 +600,25 @@ Object.assign(chapatt.SpinBox,
     },
 
     handleValueChanged: function(targetWidget, signalName, signalData) {
+        function roundToDecimalPlaces(x, places) {
+            var roundScale = Math.pow(10, places);
+            return Math.round(roundScale * x) / roundScale;
+        }
+
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
-        // FIXME! round before displaying
-        if (units = this.valueModel.getUnitTable())
-            field.textContent = units[this.valueModel.unitIndex].convTo(signalData);
-        else
-            field.textContent = signalData;
+        // FIXME! parameterize rounding
+        var newFieldContent = roundToDecimalPlaces(
+            ((units = this.valueModel.getUnitTable()) ?
+                units[this.valueModel.unitIndex].convTo(signalData) :
+                signalData),
+            2
+        );
 
         // FIXME! if set to show unit suffix, and space or not based on unit 
         if (units)
-            field.textContent = field.textContent + ' ' + units[this.valueModel.unitIndex].symbol;
+            newFieldContent = newFieldContent + ' ' + units[this.valueModel.unitIndex].symbol;
+
+        field.textContent = newFieldContent;
     },
 
     handleWheel: function(event) {
