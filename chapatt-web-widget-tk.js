@@ -94,10 +94,9 @@ chapatt.Unit = {
     }
 }
 
-chapatt.UnitTable = {
+chapatt.UnitTable = [];
+Object.assign(chapatt.UnitTable, {
     initUnitTable: function(initialUnits) {
-        this.units = [];
-
         if (initialUnits) {
             this.addUnits(initialUnits);
         }
@@ -105,11 +104,12 @@ chapatt.UnitTable = {
 
     addUnits: function(units) {
         units.forEach(function(item) {
-            this.units.push(item);
+            this.push(item);
         }.bind(this));
     },
 
     valueFromToUnit: function(value, fromUnitIndex, toUnitIndex) {
+        // FIXME! implement
     },
 
     new: function() {
@@ -117,7 +117,7 @@ chapatt.UnitTable = {
         unitTable.initUnitTable();
         return unitTable;
     }
-}
+});
 
 chapatt.ValueModel = {};
 Object.assign(chapatt.ValueModel, chapatt.Emitter);
@@ -126,34 +126,10 @@ Object.assign(chapatt.ValueModel,
     initValueModel: function() {
         this.initEmitter();
         this.addSignal('valueChanged');
-
-        this.unitTable = chapatt.UnitTable.new();
-        this.unitIndex = 1;
     },
 
-    getUnitTable: function() {
-        return this.unitTable;
-    },
-
-    setUnitTable: function(unitTable) {
-        this.unitTable = unitTable;
-    },
-
-    getUnit: function() {
-        return this.unitIndex;
-    },
-
-    setUnit: function(unitIndex) {
-        this.unitIndex = unitIndex;
-    },
-
-    /* If no unitIndex given, get value in current unit */
     getValue: function(unitIndex) {
-        if (!unitIndex) {
-            return this.value;
-        } else {
-            return this.unitTable.valueFromToUnit(this.value, this.unitIndex, unitIndex);
-        }
+        return this.value;
     },
 
     setValue: function(value) {
@@ -170,6 +146,71 @@ Object.assign(chapatt.ValueModel,
         return valueModel;
     }
 });
+
+chapatt.Indexed = {
+    initIndexed: function(initialValues) {
+        this.valueTable = chapatt.ValueTable.new(initialValues);
+
+        this.valueIndex = 0;
+    },
+
+    getValueTable: function() {
+        return this.valueTable;
+    },
+
+    setValue: function(value) {
+        if (this.value == value)
+            return true;
+
+        for (var i=0; i < this.valueTable.length; ++i) {
+            if (this.valueTable[i] == value) {
+                this.signalEmit('valueChanged', value);
+                this.valueIndex = i;
+                this.value = this.valueTable[i];
+                return true;
+            }
+        };
+
+        return false;
+    },
+
+    setValueByIndex: function(index) {
+        this.signalEmit('valueChanged', (value = this.valueTable[index]));
+        this.value = value;
+        this.valueIndex = index;
+    }
+}
+
+chapatt.Numerical = {
+    initNumerical: function() {
+        // FIXME! initialize unitIndex properly
+        this.unitIndex = 1;
+    },
+
+    getUnitTable: function() {
+        return this.unitTable;
+    },
+
+    setUnitTable: function(unitTable) {
+        this.unitTable = unitTable;
+    },
+
+    getUnitIndex: function() {
+        return this.unitIndex;
+    },
+
+    setUnitIndex: function(unitIndex) {
+        this.unitIndex = unitIndex;
+    },
+
+    getValue: function(unitIndex) {
+        if (!unitIndex) {
+            return this.value;
+        } else {
+            return this.unitTable.valueFromToUnit(this.value, this.unitIndex, unitIndex);
+        }
+    }
+}
 
 chapatt.Bounded = {
     setValue: function(value) {
@@ -235,6 +276,7 @@ chapatt.Widget = {
         this.widgets.push(this);
     },
 
+    // FIXME! either keep instances array in widget subclasses, or reimplement each time
     getByElement: function(element) {
         return this.instances.find(function(item) {
             return (item.element === element);
@@ -309,13 +351,17 @@ Object.assign(chapatt.TextBox,
 
 chapatt.Button = Object.create(chapatt.Widget);
 Object.assign(chapatt.Button, chapatt.Emitter);
+Object.assign(chapatt.Button, chapatt.Valuable);
 Object.assign(chapatt.Button,
 {
     buttons: [],
 
-    initButton: function(element) {
+    initButton: function(element, initialValue) {
         this.initWidget(element);
         this.initEmitter();
+        this.initValuable();
+
+        this.valueModel.setValue(initialValue);
 
         this.buttons.push(this);
 
@@ -329,27 +375,26 @@ Object.assign(chapatt.Button,
     },
 
     handleClick: function() {
-            this.signalEmit('clicked');
+            this.signalEmit('clicked', this.valueModel.getValue());
     },
 
-    new: function(element) {
+    new: function(element, initialValue) {
         var button = Object.create(this);
-        button.initButton(element);
+        button.initButton(element, initialValue);
         return button;
     }
 });
 
-chapatt.ValueTable = {
+chapatt.ValueTable = [];
+Object.assign(chapatt.ValueTable, {
     initValueTable: function(initialValues) {
-        this.values = [];
-
         initialValues.forEach(function(item) {
-            this.values.push(item);
+            this.push(item);
         }.bind(this));
     },
 
     addValue: function(value) {
-        this.values.push(value);
+        this.push(item);
     },
 
     new: function(initialValues) {
@@ -357,7 +402,7 @@ chapatt.ValueTable = {
         valueTable.initValueTable(initialValues);
         return valueTable;
     }
-};
+});
 
 chapatt.CycleButton = Object.create(chapatt.Button);
 Object.assign(chapatt.CycleButton, chapatt.Valuable);
@@ -369,23 +414,19 @@ Object.assign(chapatt.CycleButton,
         this.initButton(element);
         this.initValuable();
 
+        Object.assign(this.valueModel, chapatt.Indexed);
+        this.valueModel.initIndexed(initialValues);
+
         this.cycleButtons.push(this);
 
         this.signalConnect('clicked', this.cycle.bind(this));
-
-        this.valueTable = chapatt.ValueTable.new(initialValues);
-
-        if (this.element.classList.contains('selected'))
-            this.valueModel.setValue(1);
-        else
-            this.valueModel.setValue(0);
     },
 
     cycle: function() {
-        if ((value = this.valueModel.getValue()) < this.valueTable.values.length - 1) {
-            this.valueModel.setValue(value + 1);
+        if ((i = this.valueModel.valueIndex) < this.valueModel.getValueTable().length - 1) {
+            this.valueModel.setValueByIndex(++this.valueModel.valueIndex);
         } else {
-            this.valueModel.setValue(0);
+            this.valueModel.setValueByIndex(0);
         }
     },
 
@@ -400,14 +441,20 @@ chapatt.ToggleButton = Object.create(chapatt.CycleButton);
 Object.assign(chapatt.ToggleButton,
 {
     initToggleButton: function(element) {
-        this.initCycleButton(element, [0, 1]);
+        this.initCycleButton(element, ['unselected', 'selected']);
 
         this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
+
+        if (this.element.classList.contains('selected')) {
+            this.valueModel.setValueByIndex(1);
+        } else {
+            this.valueModel.setValueByIndex(0);
+        }
     },
 
     handleValueChanged: function(targetWidget, signalName, signalData) {
         classList = this.element.classList;
-        if (signalData == 1) {
+        if (signalData == 'selected') {
             if (!classList.contains('selected'))
                 classList.add('selected');
         } else {
@@ -430,7 +477,13 @@ Object.assign(chapatt.SpinBox,
     initSpinBox: function(element, initialUnits) {
         this.initWidget(element);
         this.initValuable();
-        this.valueModel.getUnitTable().addUnits(initialUnits);
+
+        Object.assign(this.valueModel, chapatt.Numerical);
+        this.valueModel.initNumerical();
+        if (initialUnits) {
+            this.valueModel.setUnitTable(chapatt.UnitTable.new());
+            this.valueModel.getUnitTable().addUnits(initialUnits);
+        }
 
         // the magnitude of the wheel delta which results in 1 unit change.
         // Larger values result in finer adjustment
@@ -504,50 +557,65 @@ Object.assign(chapatt.SpinBox,
     },
 
     setValueParsingString: function(string) {
-        var units = this.valueModel.getUnitTable().units;
-        if (isNaN(Number(string))) {
-            // Not a number; attempt to parse as number with suffix
-            units.forEach(function(unit, index) {
-                if (string.endsWith(unit.symbol)) {
-                    // if set to switch to this unit by default
-                    this.valueModel.setUnit(index);
+        if (units = this.valueModel.getUnitTable()) {
+            if (isNaN(Number(string))) {
+                // Not a number; attempt to parse as number with suffix
+                units.forEach(function(unit, index) {
+                    if (string.endsWith(unit.symbol)) {
+                        // if set to switch to this unit by default
+                        this.valueModel.setUnitIndex(index);
 
-                    var newValue = unit.convFrom(Number(string.slice(0, -unit.symbol.length)));
-                    this.valueModel.setValue(newValue);
-                }
-            }.bind(this));
+                        var newValue = unit.convFrom(Number(string.slice(0, -unit.symbol.length)));
+                        this.valueModel.setValue(newValue);
+                    }
+                }.bind(this));
+            } else {
+                var newValue = units[this.valueModel.unitIndex].convFrom(Number(string));
+                this.valueModel.setValue(newValue);
+            }
         } else {
-            var newValue = units[this.valueModel.unitIndex].convFrom(Number(string));
-            this.valueModel.setValue(newValue);
+            if (isNaN(Number(string)))
+                return false;
+            else
+                this.valueModel.setValue(parseFloat(string));
         }
     },
 
     increase: function() {
-        var units = this.valueModel.getUnitTable().units;
-        var newValue = this.valueModel.getValue() + units[this.valueModel.getUnit()].convFrom(1);
-        this.valueModel.setValue(newValue);
+        if (units = this.valueModel.getUnitTable()) {
+            var newValue = this.valueModel.getValue() + units[this.valueModel.getUnitIndex()].convFrom(1);
+            this.valueModel.setValue(newValue);
+        } else {
+            this.valueModel.setValue(this.valueModel.getValue() + 1);
+        }
     },
 
     decrease: function() {
-        var units = this.valueModel.getUnitTable().units;
-        var newValue = this.valueModel.getValue() - units[this.valueModel.getUnit()].convFrom(1);
-        this.valueModel.setValue(newValue);
+        if (units = this.valueModel.getUnitTable()) {
+            var newValue = this.valueModel.getValue() - units[this.valueModel.getUnitIndex()].convFrom(1);
+            this.valueModel.setValue(newValue);
+        } else {
+            this.valueModel.setValue(this.valueModel.getValue() - 1);
+        }
     },
 
     handleValueChanged: function(targetWidget, signalName, signalData) {
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         // FIXME! round before displaying
-        var units = this.valueModel.getUnitTable().units;
-        field.textContent = units[this.valueModel.unitIndex].convTo(signalData);
+        if (units = this.valueModel.getUnitTable())
+            field.textContent = units[this.valueModel.unitIndex].convTo(signalData);
+        else
+            field.textContent = signalData;
 
-        // FIXME! if set to show unit suffix
-        field.textContent = field.textContent + ' ' + units[this.valueModel.unitIndex].symbol;
+        // FIXME! if set to show unit suffix, and space or not based on unit 
+        if (units)
+            field.textContent = field.textContent + ' ' + units[this.valueModel.unitIndex].symbol;
     },
 
     handleWheel: function(event) {
         // FIXME! add x and y scrolling
-        var units = this.valueModel.getUnitTable().units;
-        var newValue = this.valueModel.getValue() + units[this.valueModel.getUnit()].convFrom(-event.deltaY / this.scrollPixelsPerUnit);
+        var units = this.valueModel.getUnitTable();
+        var newValue = this.valueModel.getValue() + units[this.valueModel.getUnitIndex()].convFrom(-event.deltaY / this.scrollPixelsPerUnit);
         this.valueModel.setValue(newValue);
 
         event.preventDefault();
@@ -555,7 +623,10 @@ Object.assign(chapatt.SpinBox,
 
     new: function(element, initialUnits) {
         var spinBox = Object.create(this);
-        spinBox.initSpinBox(element, initialUnits);
+        if (initialUnits)
+            spinBox.initSpinBox(element, initialUnits);
+        else
+            spinBox.initSpinBox(element);
         return spinBox;
     }
 });

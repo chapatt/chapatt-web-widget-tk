@@ -13,28 +13,29 @@
             console.log('text-box-1: valueChanged');
         });
 
-        var button1 = chapatt.Button.new(document.getElementById('button-1'));
+        var button1 = chapatt.Button.new(document.getElementById('button-1'), 1);
         button1.signalConnect('clicked',
             function(targetWidget, signalName, signalData, userData) {
                 console.log(targetWidget,
-                    'emitted \'' + signalName + '\' signal with userData:',
-                    userData
-                );
+                    'emitted \'' + signalName + '\' signal with signalData:',
+                    signalData,
+                    'and userData:',
+                    userData);
             },
             'hiya!'
         );
 
-        var button2 = chapatt.Button.new(document.getElementById('button-2'));
+        var button2 = chapatt.Button.new(document.getElementById('button-2'), 2);
         button2.signalConnect('clicked', function() {
             console.log('button-2: clicked');
         });
 
-        var button3 = chapatt.Button.new(document.getElementById('button-3'));
+        var button3 = chapatt.Button.new(document.getElementById('button-3'), 3);
         button3.signalConnect('clicked', function() {
             console.log('button-3: clicked');
         });
 
-        var button4 = chapatt.Button.new(document.getElementById('button-4'));
+        var button4 = chapatt.Button.new(document.getElementById('button-4'), 4);
         button4.signalConnect('clicked', function() {
             console.log('button-4: clicked');
         });
