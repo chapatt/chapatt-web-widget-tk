@@ -487,7 +487,7 @@ Object.assign(chapatt.SpinBox,
 
         // the magnitude of the wheel delta which results in 1 unit change.
         // Larger values result in finer adjustment
-        this.scrollPixelsPerUnit = 10;
+        this.scrollPixelsPerUnit = 155;
         // the magnitude of the mousemove delta which results in 1 unit change.
         // Larger values result in finer adjustment
         this.mousemovePixelsPerUnit = 75;
@@ -538,7 +538,8 @@ Object.assign(chapatt.SpinBox,
             }
 
             if (this.dragMinimumMovementExceeded) {
-                this.valueModel.setValue(this.valueOnMousedown + (deltaY / this.mousemovePixelsPerUnit));
+                var unit = this.valueModel.getUnitTable()[this.valueModel.getUnitIndex()];
+                this.valueModel.setValue(this.valueOnMousedown + unit.convFrom(deltaY / this.mousemovePixelsPerUnit));
             }
 
             event.preventDefault();
@@ -623,8 +624,8 @@ Object.assign(chapatt.SpinBox,
 
     handleWheel: function(event) {
         // FIXME! add x and y scrolling
-        var units = this.valueModel.getUnitTable();
-        var newValue = this.valueModel.getValue() + units[this.valueModel.getUnitIndex()].convFrom(-event.deltaY / this.scrollPixelsPerUnit);
+        var unit = this.valueModel.getUnitTable()[this.valueModel.getUnitIndex()];
+        var newValue = this.valueModel.getValue() + unit.convFrom(-event.deltaY / this.scrollPixelsPerUnit);
         this.valueModel.setValue(newValue);
 
         event.preventDefault();
