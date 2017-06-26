@@ -36,6 +36,8 @@ chapatt.Signal = {
 chapatt.Emitter = {
     initEmitter: function() {
         this.signals = [];
+
+        this.signalsBlocked = false;
     },
 
     addSignal: function(name) {
@@ -55,9 +57,18 @@ chapatt.Emitter = {
         var self = this;
 
         // if signal doesn't exist, throw error
-        this.signals.find(function(item) {
-            return item.name === name;
-        }).emit(self, signalData);
+        if (!this.signalsBlocked) {
+            this.signals.find(function(item) {
+                return item.name === name;
+            }).emit(self, signalData);
+        }
+    },
+
+    blockSignals: function(block) {
+        if (block)
+            this.signalsBlocked = true;
+        else
+            this.signalsBlocked = false;
     }
 }
 
