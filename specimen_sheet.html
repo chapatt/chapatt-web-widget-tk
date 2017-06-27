@@ -13,17 +13,20 @@
             console.log('text-box-1: valueChanged');
         });
 
+        function callback1(targetWidget, signalName, signalData, userData) {
+            console.log(targetWidget,
+                'emitted \'' + signalName + '\' signal with signalData:',
+                signalData,
+                'and userData:',
+                userData);
+        }
         var button1 = chapatt.Button.new(document.getElementById('button-1'), 1);
-        button1.signalConnect('clicked',
-            function(targetWidget, signalName, signalData, userData) {
-                console.log(targetWidget,
-                    'emitted \'' + signalName + '\' signal with signalData:',
-                    signalData,
-                    'and userData:',
-                    userData);
-            },
-            'hiya!'
+        button1.signalConnect('clicked', callback1, 'hiya!'
         );
+        // disconnect callback1 from 'clicked' signal of button 1 and save data
+        var callbackObj1 = button1.signals[0].disconnect(callback1);
+        // reconnect saved data to 'clicked' signal of button 1
+        button1.signals[0].connect(callbackObj1.callback, callbackObj1.userData);
 
         var button2 = chapatt.Button.new(document.getElementById('button-2'), 2);
         button2.signalConnect('clicked', function() {

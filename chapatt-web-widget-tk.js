@@ -13,8 +13,20 @@ chapatt.Signal = {
         this.name = name;
     },
 
+    // check if already connected
     connect: function(callback, userData) {
-        this.callbacks.push({"callback": callback, "userData": userData});
+        this.callbacks.push({callback: callback, userData: userData});
+    },
+
+    disconnect: function(callback) {
+        var callbackObj = this.callbacks.find(function(element, index, array) {
+            if (element.callback === callback) {
+                array.splice(index, 1);
+                return true;
+            }
+        });
+
+        return callbackObj;
     },
 
     emit: function(targetWidget, signalData) {
