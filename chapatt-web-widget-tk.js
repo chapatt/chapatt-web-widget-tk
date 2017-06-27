@@ -65,6 +65,14 @@ chapatt.Emitter = {
         }).connect(callback, userData);
     },
 
+    signalDisconnect: function(name, callback) {
+        var callbackObj = this.signals.find(function(item){
+            return item.name === name;
+        }).disconnect(callback);
+
+        return callbackObj;
+    },
+
     signalEmit: function(name, signalData) {
         var self = this;
 
