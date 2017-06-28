@@ -7,6 +7,10 @@ if (!chapatt) {
 }
 
 chapatt.Signal = {
+    // make recursive signal emission configurable
+    preventRecursiveSignalEmission: true,
+    signalEmitting: false,
+
     initSignal: function(name) {
         this.callbacks = [];
 
@@ -32,9 +36,15 @@ chapatt.Signal = {
     emit: function(targetWidget, signalData) {
         var self = this;
 
-        this.callbacks.forEach(function(item) {
-            item.callback(targetWidget, self.name, signalData, item.userData);
-        });
+        if (this.preventRecursiveSignalEmission && !this.signalEmitting) {
+            this.signalEmitting = true;
+
+            this.callbacks.forEach(function(item) {
+                item.callback(targetWidget, self.name, signalData, item.userData);
+            });
+
+            this.signalEmitting = false;
+        }
     },
 
     new: function(name) {
