@@ -776,3 +776,77 @@ Object.assign(chapatt.ButtonGroup,
         return buttonGroup;
     }
 });
+
+chapatt.ToggleButtonGroup = Object.create(chapatt.ButtonGroup);
+Object.assign(chapatt.ToggleButtonGroup, chapatt.Valuable);
+Object.assign(chapatt.ToggleButtonGroup,
+{
+    toggleButtonGroups: [],
+
+    initToggleButtonGroup: function(element) {
+        this.initButtonGroup(element);
+        this.initValuable();
+
+        this.toggleButtonGroups.push(this);
+
+        this.toggleButtons = [];
+        this.initToggleButtons();
+
+        var valueModelInterface = Object.create(chapatt.Emitter);
+        Object.assign(valueModelInterface, {
+            initValueModelInterface: function(parent) {
+                this.initEmitter();
+
+                this.parent = parent;
+
+                this.addSignal('valueChanged');
+            },
+
+            valueChanged: function(buttonIndex, buttonNewValue) {
+                var value = [];
+                this.parent.toggleButtons.forEach(function(item, index) {
+                    if (index === buttonIndex) // this is the value that changed
+                        value.push(buttonNewValue);
+                    else
+                        value.push(item.getValueModel().getValue());
+                });
+                
+                this.signalEmit('valueChanged', value);
+            },
+
+            getValue: function() {
+                var value = [];
+                this.parent.toggleButtons.forEach(function(item) {
+                    value.push(item.getValueModel().getValue());
+                });
+
+                return value;
+            }
+        });
+        this.valueModel = Object.create(valueModelInterface);
+        this.valueModel.initValueModelInterface(this);
+    },
+
+    initButtons: function() {
+    },
+
+    initToggleButtons: function() {
+        var toggleButtons = this.element.getElementsByClassName('button');
+        for (var i = 0; i < toggleButtons.length; i++) {
+            this.toggleButtons.push(chapatt.ToggleButton.new(toggleButtons[i]));
+            this.toggleButtons[i].getValueModel().signalConnect('valueChanged', this.toggleButtonHandleValueChanged.bind(this), i);
+            this.toggleButtons[i].signalConnect('clicked', this.buttonHandleClicked.bind(this), i);
+        }
+    },
+
+    toggleButtonHandleValueChanged: function(targetWidget, signalName, signalData, userData) {
+        // react to toggle
+        this.valueModel.valueChanged(userData, signalData);
+    },
+
+    new: function(element) {
+        var toggleButtonGroup = Object.create(this);
+        toggleButtonGroup.initToggleButtonGroup(element);
+        return toggleButtonGroup;
+    }
+});

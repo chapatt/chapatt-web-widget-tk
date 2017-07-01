@@ -105,6 +105,11 @@
         buttonGroup1.signalConnect('clicked', function(targetWidget, signalName, signalData, userData) {
             console.log('button-group-1: clicked button with value ' + signalData);
         });
+
+        var toggleButtonGroup1 = chapatt.ToggleButtonGroup.new(document.getElementById('toggle-button-group-1'));
+        toggleButtonGroup1.valueModel.signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
+            console.log('toggle-button-group-1: valueChanged from ' + toggleButtonGroup1.valueModel.getValue() + ' to ' + signalData);
+        });
     });
   </script>
 </head>
