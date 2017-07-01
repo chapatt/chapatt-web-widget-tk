@@ -761,13 +761,13 @@ Object.assign(chapatt.ButtonGroup,
     initButtons: function() {
         var buttons = this.element.getElementsByClassName('button');
         for (var i = 0; i < buttons.length; i++) {
-            this.buttons.push(buttons[i]);
-            buttons[i].addEventListener('click', this.handleClick.bind(this, i));
+            this.buttons.push(chapatt.Button.new(buttons[i], i));
+            this.buttons[i].signalConnect('clicked', this.buttonHandleClicked.bind(this), i);
         }
     },
 
-    handleClick: function(buttonIndex) {
-            this.signalEmit('clicked', buttonIndex);
+    buttonHandleClicked: function(targetWidget, signalName, signalData, userData) {
+            this.signalEmit('clicked', signalData);
     },
 
     new: function(element) {
