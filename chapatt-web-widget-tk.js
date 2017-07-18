@@ -33,14 +33,14 @@ chapatt.Signal = {
         return callbackObj;
     },
 
-    emit: function(targetWidget, signalData) {
+    emit: function(target, signalData) {
         var self = this;
 
         if (this.preventRecursiveSignalEmission && !this.signalEmitting) {
             this.signalEmitting = true;
 
             this.callbacks.forEach(function(item) {
-                item.callback(targetWidget, self.name, signalData, item.userData);
+                item.callback(target, self.name, signalData, item.userData);
             });
 
             this.signalEmitting = false;
@@ -348,7 +348,7 @@ Object.assign(chapatt.TextBox,
         fieldObserver.observe(field, {characterData: true, subtree: true});
     },
 
-    handleValueChanged: function(targetWidget, signalName, signalData)  {
+    handleValueChanged: function(target, signalName, signalData)  {
         var field = this.element.getElementsByClassName('field')[0].firstElementChild;
         field.textContent = signalData;
     },
@@ -493,7 +493,7 @@ Object.assign(chapatt.ToggleButton,
         }
     },
 
-    handleValueChanged: function(targetWidget, signalName, signalData) {
+    handleValueChanged: function(target, signalName, signalData) {
         classList = this.element.classList;
         if (signalData == 'selected') {
             if (!classList.contains('selected'))
@@ -594,7 +594,7 @@ Object.assign(chapatt.SpinBox,
         }
     },
 
-    handleFieldValueChanged: function(targetWidget, signalName, signalData) {
+    handleFieldValueChanged: function(target, signalName, signalData) {
         this.setValueParsingString(signalData);
     },
 
@@ -641,7 +641,7 @@ Object.assign(chapatt.SpinBox,
         }
     },
 
-    handleValueChanged: function(targetWidget, signalName, signalData) {
+    handleValueChanged: function(target, signalName, signalData) {
         function roundToDecimalPlaces(x, places) {
             var roundScale = Math.pow(10, places);
             return Math.round(roundScale * x) / roundScale;
@@ -697,7 +697,7 @@ Object.assign(chapatt.Bar,
         this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
     },
 
-    handleValueChanged: function(targetWidget, signalName, signalData) {
+    handleValueChanged: function(target, signalName, signalData) {
         var bar = this.element.getElementsByClassName('bar')[0];
         bar.style.width = signalData * 100 + '%';
     },
@@ -724,7 +724,7 @@ Object.assign(chapatt.Slider,
         this.valueModel.signalConnect('valueChanged', this.setBar.bind(this));
     },
 
-    setBar: function(targetWidget, signalName, signalData) {
+    setBar: function(target, signalName, signalData) {
         var fraction = signalData / (this.valueModel.getMaximum() - this.valueModel.getMinimum());
         this.bar.getValueModel().setValue(fraction);
     },
@@ -766,7 +766,7 @@ Object.assign(chapatt.ButtonGroup,
         }
     },
 
-    buttonHandleClicked: function(targetWidget, signalName, signalData, userData) {
+    buttonHandleClicked: function(target, signalName, signalData, userData) {
             this.signalEmit('clicked', signalData);
     },
 
@@ -839,7 +839,7 @@ Object.assign(chapatt.ToggleButtonGroup,
         }
     },
 
-    toggleButtonHandleValueChanged: function(targetWidget, signalName, signalData, userData) {
+    toggleButtonHandleValueChanged: function(target, signalName, signalData, userData) {
         // react to toggle
         this.valueModel.valueChanged(userData, signalData);
     },
