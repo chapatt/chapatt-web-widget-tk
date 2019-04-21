@@ -162,11 +162,23 @@ Object.assign(chapatt.UnitTable, {
 
 chapatt.ValueModel = {};
 Object.assign(chapatt.ValueModel, chapatt.Emitter);
-Object.assign(chapatt.ValueModel,
-{
+Object.assign(chapatt.ValueModel, {
     initValueModel: function() {
         this.initEmitter();
         this.addSignal('valueChanged');
+	this.constraints = [];
+    },
+
+    addConstraint: function(constraint) {
+        this.constraints.push(constraint);
+    },
+
+    insertConstraintBefore: function(constraint, reference) {
+        referenceIndex = this.constraints.findIndex(function(constraint, index, array) {
+            if (constraint === reference)
+                return true
+        });
+        this.constraints.splice(referenceIndex, 0, constraint);
     },
 
     getValue: function(unitIndex) {
@@ -174,6 +186,13 @@ Object.assign(chapatt.ValueModel,
     },
 
     setValue: function(value) {
+        if (this.value == value)
+            return;
+
+        this.constraints.forEach(function(constraint) {
+            value = constraint.constrain(value);
+        });
+
         if (this.value == value)
             return;
 
@@ -189,43 +208,25 @@ Object.assign(chapatt.ValueModel,
 });
 
 chapatt.Indexed = {
+    valueIndex: 0,
+
     initIndexed: function(initialValues) {
-        this.valueTable = chapatt.ValueTable.new(initialValues);
-
-        this.valueIndex = 0;
-    },
-
-    getValueTable: function() {
-        return this.valueTable;
-    },
-
-    setValue: function(value) {
-        if (this.value == value)
-            return true;
-
-        for (var i=0; i < this.valueTable.length; ++i) {
-            if (this.valueTable[i] == value) {
-                this.signalEmit('valueChanged', value);
-                this.valueIndex = i;
-                this.value = this.valueTable[i];
-                return true;
-            }
-        };
-
-        return false;
+        this.indexedConstraint = chapatt.IndexedConstraint.new(initialValues);
+        this.addConstraint(this.indexedConstraint);
     },
 
     setValueByIndex: function(index) {
-        this.signalEmit('valueChanged', (value = this.valueTable[index]));
-        this.value = value;
+        this.setValue(this.indexedConstraint.getValueTable()[index]);
         this.valueIndex = index;
     }
 }
 
 chapatt.Numerical = {
+    unitIndex: 0,
+
     initNumerical: function() {
-        // FIXME! initialize unitIndex properly
-        this.unitIndex = 1;
+        this.numericalConstraint = chapatt.NumericalConstraint.new();
+        this.addConstraint(this.numericalConstraint);
     },
 
     getUnitTable: function() {
@@ -242,38 +243,100 @@ chapatt.Numerical = {
 
     setUnitIndex: function(unitIndex) {
         this.unitIndex = unitIndex;
-    },
-
-    getValue: function(unitIndex) {
-        if (!unitIndex) {
-            return this.value;
-        } else {
-            return this.unitTable.valueFromToUnit(this.value, this.unitIndex, unitIndex);
-        }
     }
 }
 
-chapatt.Bounded = {
-    setValue: function(value) {
-        if (this.value == value) {
-            return;
-        }
+chapatt.ValueConstraint = {
+    initValueConstraint: function() {
+    },
 
-        if (value < this.minimum) {
-            if (this.value == this.minimum)
-                return;
+    constrain: function(value) {
+        return value;
+    }
+}
 
-            this.signalEmit('valueChanged', this.minimum);
-            this.value = this.minimum;
-        } else if (value > this.maximum) {
-            if (this.value == this.maximum)
-                return;
+chapatt.CannotConstraintException = {
+    name: 'CannotConstraintException',
+    message: 'Value cannot be coerced to constraint'
+};
 
-            this.signalEmit('valueChanged', this.maximum);
-            this.value = this.maximum;
+chapatt.IntegralConstraint = {};
+Object.assign(chapatt.IntegralConstraint, chapatt.ValueConstraint);
+Object.assign(chapatt.IntegralConstraint, {
+    constrain: function(value) {
+        return Math.round(value);
+    },
+
+    new: function(initialValues) {
+        var constraint = Object.create(this);
+        constraint.initValueConstraint();
+        return constraint;
+    }
+});
+
+chapatt.IndexedConstraint = {};
+Object.assign(chapatt.IndexedConstraint, chapatt.ValueConstraint);
+Object.assign(chapatt.IndexedConstraint, {
+    initIndexedConstraint: function(initialValues) {
+        this.valueTable = chapatt.ValueTable.new(initialValues);
+
+        this.valueIndex = 0;
+    },
+
+    getValueTable: function() {
+        return this.valueTable;
+    },
+
+    constrain: function(value) {
+        var valueIndex = this.valueTable.findIndex(function(element, index, array) {
+            if (element == value)
+                return true;
+        });
+
+        if (valueIndex == undefined) {
+            throw chapatt.CannotConstraintException;
         } else {
-            this.signalEmit('valueChanged', value);
-            this.value = value;
+            this.valueIndex = valueIndex;
+            return this.valueTable[valueIndex];
+        }
+    },
+
+    new: function(initialValues) {
+        var constraint = Object.create(this);
+        constraint.initValueConstraint();
+        constraint.initIndexedConstraint(initialValues);
+        return constraint;
+    }
+});
+
+chapatt.NumericalConstraint = {};
+Object.assign(chapatt.NumericalConstraint, chapatt.ValueConstraint);
+Object.assign(chapatt.NumericalConstraint, {
+    constrain: function(value) {
+        if (typeof value == 'number') {
+            return value;
+        } else {
+            throw chapatt.CannotConstraintException;
+        }
+    },
+
+    new: function() {
+        var constraint = Object.create(this);
+        constraint.initValueConstraint();
+        return constraint;
+    }
+});
+
+chapatt.BoundedConstraint = {};
+Object.assign(chapatt.BoundedConstraint, chapatt.ValueConstraint);
+Object.assign(chapatt.BoundedConstraint, {
+    constrain: function(value) {
+        if (value < this.minimum) {
+            return this.minimum;
+        } else if (value > this.maximum) {
+            return this.maximum;
+        } else {
+            return value;
         }
     },
 
@@ -291,8 +354,14 @@ chapatt.Bounded = {
 
     setMaximum: function(maximum) {
         this.maximum = maximum;
+    },
+
+    new: function() {
+        var constraint = Object.create(this);
+        constraint.initValueConstraint();
+        return constraint;
     }
-};
+});
 
 chapatt.Valuable = {
     initValuable: function() {
@@ -327,8 +396,7 @@ chapatt.Widget = {
 
 chapatt.TextBox = Object.create(chapatt.Widget);
 Object.assign(chapatt.TextBox, chapatt.Valuable);
-Object.assign(chapatt.TextBox,
-{
+Object.assign(chapatt.TextBox, {
     textBoxes: [],
 
     initTextBox: function(element) {
@@ -393,8 +461,7 @@ Object.assign(chapatt.TextBox,
 chapatt.Button = Object.create(chapatt.Widget);
 Object.assign(chapatt.Button, chapatt.Emitter);
 Object.assign(chapatt.Button, chapatt.Valuable);
-Object.assign(chapatt.Button,
-{
+Object.assign(chapatt.Button, {
     buttons: [],
 
     initButton: function(element, initialValue) {
@@ -447,16 +514,16 @@ Object.assign(chapatt.ValueTable, {
 
 chapatt.CycleButton = Object.create(chapatt.Button);
 Object.assign(chapatt.CycleButton, chapatt.Valuable);
-Object.assign(chapatt.CycleButton,
-{
+Object.assign(chapatt.CycleButton, {
     cycleButtons: [],
 
-    initCycleButton: function(element, initialValues) {
+    initCycleButton: function(element, initialValues, initialIndex=0) {
         this.initButton(element);
         this.initValuable();
 
         Object.assign(this.valueModel, chapatt.Indexed);
         this.valueModel.initIndexed(initialValues);
+        this.valueModel.setValueByIndex(initialIndex);
 
         this.cycleButtons.push(this);
 
@@ -464,8 +531,8 @@ Object.assign(chapatt.CycleButton,
     },
 
     cycle: function() {
-        if ((i = this.valueModel.valueIndex) < this.valueModel.getValueTable().length - 1) {
-            this.valueModel.setValueByIndex(++this.valueModel.valueIndex);
+        if (this.valueModel.valueIndex < this.valueModel.indexedConstraint.getValueTable().length - 1) {
+            this.valueModel.setValueByIndex(this.valueModel.valueIndex + 1);
         } else {
             this.valueModel.setValueByIndex(0);
         }
@@ -479,18 +546,13 @@ Object.assign(chapatt.CycleButton,
 });
 
 chapatt.ToggleButton = Object.create(chapatt.CycleButton);
-Object.assign(chapatt.ToggleButton,
-{
-    initToggleButton: function(element) {
-        this.initCycleButton(element, ['unselected', 'selected']);
+Object.assign(chapatt.ToggleButton, {
+    initToggleButton: function(element, initialIndex=0) {
+        this.initCycleButton(element, ['unselected', 'selected'], initialIndex);
 
         this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
 
-        if (this.element.classList.contains('selected')) {
-            this.valueModel.setValueByIndex(1);
-        } else {
-            this.valueModel.setValueByIndex(0);
-        }
+        this.cycle;
     },
 
     handleValueChanged: function(target, signalName, signalData) {
@@ -504,18 +566,17 @@ Object.assign(chapatt.ToggleButton,
         }
     },
 
-    new: function(element) {
+    new: function(element, initialIndex=0) {
         var toggleButton = Object.create(this);
-        toggleButton.initToggleButton(element);
+        toggleButton.initToggleButton(element, initialIndex);
         return toggleButton;
     }
 });
 
 chapatt.SpinBox = Object.create(chapatt.Widget);
 Object.assign(chapatt.SpinBox, chapatt.Valuable);
-Object.assign(chapatt.SpinBox,
-{
-    initSpinBox: function(element, initialUnits) {
+Object.assign(chapatt.SpinBox, {
+    initSpinBox: function(element, initialUnits, initialUnitIndex) {
         this.initWidget(element);
         this.initValuable();
 
@@ -524,6 +585,9 @@ Object.assign(chapatt.SpinBox,
         if (initialUnits) {
             this.valueModel.setUnitTable(chapatt.UnitTable.new());
             this.valueModel.getUnitTable().addUnits(initialUnits);
+
+            if (initialUnitIndex)
+                this.valueModel.setUnitIndex(initialUnitIndex);
         }
 
         // the magnitude of the wheel delta which results in 1 unit change.
@@ -612,7 +676,7 @@ Object.assign(chapatt.SpinBox,
                     }
                 }.bind(this));
             } else {
-                var newValue = units[this.valueModel.unitIndex].convFrom(Number(string));
+                var newValue = units[this.valueModel.getUnitIndex()].convFrom(Number(string));
                 this.valueModel.setValue(newValue);
             }
         } else {
@@ -672,10 +736,10 @@ Object.assign(chapatt.SpinBox,
         event.preventDefault();
     },
 
-    new: function(element, initialUnits) {
+    new: function(element, initialUnits, initialUnitIndex) {
         var spinBox = Object.create(this);
         if (initialUnits)
-            spinBox.initSpinBox(element, initialUnits);
+            spinBox.initSpinBox(element, initialUnits, initialUnitIndex);
         else
             spinBox.initSpinBox(element);
         return spinBox;
@@ -684,15 +748,15 @@ Object.assign(chapatt.SpinBox,
 
 chapatt.Bar = Object.create(chapatt.Widget);
 Object.assign(chapatt.Bar, chapatt.Valuable);
-Object.assign(chapatt.Bar,
-{
+Object.assign(chapatt.Bar, {
     initBar: function(element) {
         this.initWidget(element);
         this.initValuable();
 
-        Object.assign(this.valueModel, chapatt.Bounded);
-        this.valueModel.setMinimum(0);
-        this.valueModel.setMaximum(1);
+        this.boundedConstraint = chapatt.BoundedConstraint.new();
+        this.valueModel.addConstraint(this.boundedConstraint);
+        this.boundedConstraint.setMinimum(0);
+        this.boundedConstraint.setMaximum(1);
 
         this.valueModel.signalConnect('valueChanged', this.handleValueChanged.bind(this));
     },
@@ -710,14 +774,14 @@ Object.assign(chapatt.Bar,
 });
 
 chapatt.Slider = Object.create(chapatt.SpinBox);
-Object.assign(chapatt.Slider,
-{
+Object.assign(chapatt.Slider, {
     initSlider: function(element, initialUnits, minimum, maximum) {
         this.initSpinBox(element, initialUnits);
 
-        Object.assign(this.valueModel, chapatt.Bounded);
-        this.valueModel.setMinimum(minimum);
-        this.valueModel.setMaximum(maximum);
+        this.boundedConstraint = chapatt.BoundedConstraint.new();
+        this.valueModel.addConstraint(this.boundedConstraint);
+        this.boundedConstraint.setMinimum(minimum);
+        this.boundedConstraint.setMaximum(maximum);
 
         this.bar = chapatt.Bar.new(this.element);
 
@@ -725,7 +789,7 @@ Object.assign(chapatt.Slider,
     },
 
     setBar: function(target, signalName, signalData) {
-        var fraction = signalData / (this.valueModel.getMaximum() - this.valueModel.getMinimum());
+        var fraction = signalData / (this.boundedConstraint.getMaximum() - this.boundedConstraint.getMinimum());
         this.bar.getValueModel().setValue(fraction);
     },
 
@@ -738,8 +802,7 @@ Object.assign(chapatt.Slider,
 
 chapatt.ButtonGroup = Object.create(chapatt.Widget);
 Object.assign(chapatt.ButtonGroup, chapatt.Emitter);
-Object.assign(chapatt.ButtonGroup,
-{
+Object.assign(chapatt.ButtonGroup, {
     buttonGroups: [],
 
     initButtonGroup: function(element) {
@@ -779,8 +842,7 @@ Object.assign(chapatt.ButtonGroup,
 
 chapatt.ToggleButtonGroup = Object.create(chapatt.ButtonGroup);
 Object.assign(chapatt.ToggleButtonGroup, chapatt.Valuable);
-Object.assign(chapatt.ToggleButtonGroup,
-{
+Object.assign(chapatt.ToggleButtonGroup, {
     toggleButtonGroups: [],
 
     initToggleButtonGroup: function(element) {

@@ -49,7 +49,7 @@
             console.log('button-4: clicked');
         });
 
-        var toggleButton1 = chapatt.ToggleButton.new(document.getElementById('toggle-button-1'));
+        var toggleButton1 = chapatt.ToggleButton.new(document.getElementById('toggle-button-1'), 0);
         toggleButton1.signalConnect('clicked', function() {
             console.log('toggle-button-1: clicked');
         });
@@ -57,7 +57,7 @@
             console.log('toggle-button-1: value changed from ' + toggleButton1.getValueModel().value + ' to ' + signalData);
         });
 
-        var toggleButton2 = chapatt.ToggleButton.new(document.getElementById('toggle-button-2'));
+        var toggleButton2 = chapatt.ToggleButton.new(document.getElementById('toggle-button-2'), 1);
         toggleButton2.signalConnect('clicked', function() {
             console.log('toggle-button-2: clicked');
         });
@@ -70,7 +70,7 @@
             console.log('checkbox-1: value changed from ' + checkbox1.getValueModel().value + ' to ' + signalData);
         });
 
-        var checkbox2 = chapatt.ToggleButton.new(document.getElementById('checkbox-2'));
+        var checkbox2 = chapatt.ToggleButton.new(document.getElementById('checkbox-2'), 1);
         checkbox2.signalConnect('clicked', function() {
             console.log('checkbox-2: clicked');
         });
@@ -100,12 +100,12 @@
                 }
             )
         ];
-        var spinBox1 = chapatt.SpinBox.new(document.getElementById('spin-box-1'), spinBox1Units);
+        var spinBox1 = chapatt.SpinBox.new(document.getElementById('spin-box-1'), spinBox1Units, 1);
         spinBox1.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
             console.log('spin-box-1: value changed from ' +spinBox1.getValueModel().getValue() + ' to ' + signalData);
         });
 
-        var spinBox2 = chapatt.SpinBox.new(document.getElementById('spin-box-2'), spinBox1Units);
+        var spinBox2 = chapatt.SpinBox.new(document.getElementById('spin-box-2'), spinBox1Units, 1);
         spinBox2.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
             console.log('spin-box-2: value changed from ' + spinBox2.getValueModel().getValue() + ' to ' + signalData);
         });
@@ -113,12 +113,21 @@
         var bar1 = chapatt.Bar.new(document.getElementById('bar-1'));
         bar1.getValueModel().setValue(2 / 3);
 
-        var slider1 = chapatt.Slider.new(document.getElementById('slider-1'), spinBox1Units, 0, 2 * Math.PI);
+        var slider1Units = [
+            chapatt.Unit.new('degree', 'deg', identity, identity)
+        ];
+        var slider1 = chapatt.Slider.new(document.getElementById('slider-1'), slider1Units, 0, 360);
+        slider1.scrollPixelsPerUnit = 50;
+        slider1.mousemovePixelsPerUnit = 10;
         slider1.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
             console.log('slider-1: value changed from ' + slider1.getValueModel().getValue() + ' to ' + signalData);
         });
+        var integralConstraint = chapatt.IntegralConstraint.new();
+        slider1.getValueModel().insertConstraintBefore(integralConstraint, slider1.getValueModel().boundedConstraint);
 
-        var slider2 = chapatt.Slider.new(document.getElementById('slider-2'), spinBox1Units, 0, 2 * Math.PI);
+        var slider2 = chapatt.Slider.new(document.getElementById('slider-2'), slider1Units, 0, 360);
+        slider2.scrollPixelsPerUnit = 50;
+        slider2.mousemovePixelsPerUnit = 10;
         slider2.getValueModel().signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
             console.log('slider-2: value changed from ' + slider1.getValueModel().getValue() + ' to ' + signalData);
         });
