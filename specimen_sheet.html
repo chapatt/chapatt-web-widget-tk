@@ -141,10 +141,12 @@
             console.log('button-group-1: clicked button with value ' + signalData);
         });
 
-        var toggleButtonGroup1 = chapatt.ToggleButtonGroup.new(document.getElementById('toggle-button-group-1'));
+        var toggleButtonGroup1 = chapatt.ToggleButtonGroup.new(document.getElementById('toggle-button-group-1'), [0, 1, 0]);
         toggleButtonGroup1.valueModel.signalConnect('valueChanged', function(targetWidget, signalName, signalData, userData) {
             console.log('toggle-button-group-1: valueChanged from ' + toggleButtonGroup1.valueModel.getValue() + ' to ' + signalData);
         });
+
+        var dropDownList1 = chapatt.DropDownList.new(document.getElementById('drop-down-list-1'), [0, 0, 1]);
     });
   </script>
 </head>
@@ -392,11 +394,11 @@
 
     <dt>DropDownList</dt>
     <dd>
-      <div id="drop-down-list-1" class="example-widget example-drop-down-list">
+      <div id="drop-down-list-1" class="example-widget example-drop-down-list" tabindex="-1">
         <div class="control example-button">
           <div style="font-size: 0.6em;">&#x25bc;</div>
         </div>
-        <ul>
+        <ul class="items">
           <li class="button example-button example-toggle-button">
             <div>choice1</div>
           </li>
@@ -431,7 +433,7 @@
           <div style="font-size: 0.6em;">&#x25bc;</div>
         </div>
         <ul>
-          <li class="hint example-button">
+          <li class="hint button example-button">
             <div>--Select--</div>
           </li>
           <li class="button example-button example-toggle-button">

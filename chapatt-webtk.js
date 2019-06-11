@@ -538,7 +538,7 @@ Object.assign(chapatt.CycleButton, {
         }
     },
 
-    new: function(element, initialValues) {
+    new: function(element, initialValues, initalIndex=0) {
         var cycleButton = Object.create(this);
         cycleButton.initCycleButton(element, initialValues);
         return cycleButton;
@@ -556,7 +556,7 @@ Object.assign(chapatt.ToggleButton, {
     },
 
     handleValueChanged: function(target, signalName, signalData) {
-        classList = this.element.classList;
+        var classList = this.element.classList;
         if (signalData == 'selected') {
             if (!classList.contains('selected'))
                 classList.add('selected');
@@ -845,14 +845,14 @@ Object.assign(chapatt.ToggleButtonGroup, chapatt.Valuable);
 Object.assign(chapatt.ToggleButtonGroup, {
     toggleButtonGroups: [],
 
-    initToggleButtonGroup: function(element) {
+    initToggleButtonGroup: function(element, initialIndexes) {
         this.initButtonGroup(element);
         this.initValuable();
 
         this.toggleButtonGroups.push(this);
 
         this.toggleButtons = [];
-        this.initToggleButtons();
+        this.initToggleButtons(initialIndexes);
 
         var valueModelInterface = Object.create(chapatt.Emitter);
         Object.assign(valueModelInterface, {
@@ -892,10 +892,10 @@ Object.assign(chapatt.ToggleButtonGroup, {
     initButtons: function() {
     },
 
-    initToggleButtons: function() {
+    initToggleButtons: function(initialIndexes) {
         var toggleButtons = this.element.getElementsByClassName('button');
         for (var i = 0; i < toggleButtons.length; i++) {
-            this.toggleButtons.push(chapatt.ToggleButton.new(toggleButtons[i]));
+            this.toggleButtons.push(chapatt.ToggleButton.new(toggleButtons[i], initialIndexes[i]));
             this.toggleButtons[i].getValueModel().signalConnect('valueChanged', this.toggleButtonHandleValueChanged.bind(this), i);
             this.toggleButtons[i].signalConnect('clicked', this.buttonHandleClicked.bind(this), i);
         }
@@ -906,9 +906,37 @@ Object.assign(chapatt.ToggleButtonGroup, {
         this.valueModel.valueChanged(userData, signalData);
     },
 
-    new: function(element) {
+    new: function(element, initialIndexes) {
         var toggleButtonGroup = Object.create(this);
-        toggleButtonGroup.initToggleButtonGroup(element);
+        toggleButtonGroup.initToggleButtonGroup(element, initialIndexes);
         return toggleButtonGroup;
+    }
+});
+
+chapatt.DropDownList = Object.create(chapatt.Widget);
+Object.assign(chapatt.DropDownList, {
+    initDropDownList: function(element, initialIndexes) {
+        this.initWidget(element);
+
+        this.toggleButtonGroup = chapatt.ToggleButtonGroup.new(element.getElementsByClassName('items')[0], initialIndexes);
+
+        this.control = chapatt.Button.new(element.getElementsByClassName('control')[0], 'control');
+        this.control.signalConnect('clicked', this.controlHandleClicked.bind(this), 'controlClicked', true);
+        this.element.addEventListener('focusout', this.undrop.bind(this));
+    },
+
+    undrop: function() {
+        this.element.classList.remove('dropped');
+    },
+
+    controlHandleClicked: function(target, signalName, signalData, userData) {
+        this.element.classList.toggle('dropped');
+        this.element.focus();
+    },
+
+    new: function(element, initialIndexes) {
+        var dropDownList = Object.create(this);
+        dropDownList.initDropDownList(element, initialIndexes);
+        return dropDownList;
     }
 });
